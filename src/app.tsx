@@ -1,7 +1,10 @@
 import { FC, useEffect } from "react";
-import MainCanvas from "./components/MainCanvas";
+import MainCanvas, {
+  currentConnectionsAtom,
+  currentTargetsAtom,
+} from "./components/MainCanvas";
 import { useAtomValue, useSetAtom } from "jotai";
-import { BufferToPNGDataURL, PNGdataURLtoBuffer } from "./util";
+import { BufferToPNGDataURL, PNGdataURLtoBuffer, createNodes } from "./util";
 import {
   annotationLayerAtom,
   bgImgDataUrlAtom,
@@ -13,6 +16,8 @@ const App: FC = () => {
   const setBgImgDataUrl = useSetAtom(bgImgDataUrlAtom);
 
   const setCanvasSize = useSetAtom(canvasSizeAtom);
+  const setCurrentTargets = useSetAtom(currentTargetsAtom);
+  const setCurrentConnections = useSetAtom(currentConnectionsAtom);
 
   useEffect(() => {
     window.electronAPI.onSaveFileReply((event, message) => {
@@ -52,10 +57,27 @@ const App: FC = () => {
         <button
           className="button"
           onClick={() => {
-            setCanvasSize({ width: 1024, height: 512 });
+            setCanvasSize({ width: 1024, height: 1024 });
           }}
         >
           canvas size change
+        </button>
+        <button
+          className="button"
+          onClick={() => {
+            const { targets, connections } = createNodes({
+              nodes: [
+                { start: "a", end: "b" },
+                { start: "b", end: "c" },
+                { start: "b", end: "d", color: "#12FF12" },
+              ],
+            });
+
+            setCurrentTargets(targets);
+            // setCurrentConnections(connections);
+          }}
+        >
+          reset nodes
         </button>
       </aside>
       <main id="stage-parent">

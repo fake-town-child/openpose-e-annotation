@@ -37,15 +37,24 @@ export const createNodes = ({
     const { id: _, ...omitIdStyle } = targetStyle.find(
       (style) => style.id === targetName
     ) ?? { id: "_" };
+
+    const container = document.querySelector("#stage-parent");
+    const containerWidth = container
+      ? container.getBoundingClientRect().width
+      : window.innerWidth;
+    const containerHeight = container
+      ? container.getBoundingClientRect().height
+      : window.innerHeight;
     const {
       id: __,
       x,
       y,
     } = targetPosition.find((position) => position.id === targetName) ?? {
       id: "_",
-      x: window.innerWidth * Math.random(),
-      y: window.innerHeight * Math.random(),
+      x: containerWidth * Math.random(),
+      y: containerHeight * Math.random(),
     };
+
     return {
       id: `target-${targetName}`,
       x: x,

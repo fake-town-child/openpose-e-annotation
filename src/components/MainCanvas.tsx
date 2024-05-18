@@ -61,8 +61,8 @@ const MainCanvas: FC = () => {
       );
 
       if (stageRef.current) {
-        stageRef.current.width(canvasSize.width * scale);
-        stageRef.current.height(canvasSize.height * scale);
+        stageRef.current.width(canvasSize.width);
+        stageRef.current.height(canvasSize.height);
         stageRef.current.scale({ x: scale, y: scale });
       }
     }
@@ -81,6 +81,9 @@ const MainCanvas: FC = () => {
   }, [canvasSize]);
 
   const [currentTargets, setCurrentTargets] = useAtom(currentTargetsAtom);
+  const [currentConnections, setCurrentConnections] = useAtom(
+    currentConnectionsAtom
+  );
 
   const bgImgDataUrl = useAtomValue(bgImgDataUrlAtom);
 
@@ -98,13 +101,17 @@ const MainCanvas: FC = () => {
             width={canvasSize.width}
             height={canvasSize.height}
             onLoadCallback={(img) => {
-              setCanvasSize({ width: img.width, height: img.height });
+              setCanvasSize({
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+              });
+              console.log(img.naturalWidth, img.naturalHeight);
             }}
           />
         ) : null}
       </Layer>
       <Layer>
-        {connections.map((connection) => {
+        {currentConnections.map((connection) => {
           const from = currentTargets.find(
             (target) => target.id === connection.from
           );
@@ -127,7 +134,7 @@ const MainCanvas: FC = () => {
             />
           );
         })}
-        {targets.map((target) => (
+        {currentTargets.map((target) => (
           <Circle
             key={target.id}
             id={target.id}
