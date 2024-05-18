@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "target": "ES6",
+    "target": "ESNext",
     "allowJs": true,
-    "module": "commonjs",
+    "isolatedModules": true,
+    "incremental": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
@@ -12,6 +13,8 @@
     "outDir": "dist",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "lib": ["es2020", "DOM"],
+    "strict": true,
     "paths": {
       "*": ["node_modules/*"]
     }
