@@ -1,17 +1,34 @@
 import { useAtom, useAtomValue } from "jotai";
-import { FC, useCallback, useRef } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import { Circle, Layer, Line } from "react-konva";
-import { canvasSizeAtom } from "../stores/atom";
+import { LayerAtom, canvasSizeAtom } from "../stores/atom";
 import { Line as ELine } from "konva/lib/shapes/Line";
 import { Layer as ELayer } from "konva/lib/Layer";
-import { Connection, Target } from "../types";
+import { createNodes } from "../util";
 
 type Props = {
-  connections: Connection[];
-  targets: Target[];
+  layerAtom: LayerAtom;
 };
 
-const AnnotationLayer: FC<Props> = ({ connections, targets }) => {
+const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
+  const [layerData, setLayerData] = useAtom(layerAtom);
+
+  const localLayerRef = useRef<ELayer | null>(null);
+
+  const setLayerRef = useCallback(
+    (ref: ELayer) => {
+      localLayerRef.current = ref;
+      setLayerData({ ...layerData, ref });
+    },
+    [setLayerData, localLayerRef]
+  );
+
+  const { targets, connections } = createNodes({
+    nodes: layerData.nodes.nodes,
+    targetStyle: layerData.nodes.targetStyle,
+    targetPosition: layerData.nodes.targetPosition,
+  });
+
   const canvasSize = useAtomValue(canvasSizeAtom);
 
   const connectionRefs = useRef<{
@@ -27,7 +44,7 @@ const AnnotationLayer: FC<Props> = ({ connections, targets }) => {
   return (
     <>
       <Layer
-        ref={setAnnotationLayerRef}
+        ref={setLayerRef}
         width={canvasSize.width}
         height={canvasSize.height}
       >
@@ -96,13 +113,18 @@ const AnnotationLayer: FC<Props> = ({ connections, targets }) => {
                 (target) => target.id === event.target.id()
               );
               if (target) {
-                settargets(
-                  targets.map((t) =>
-                    t.id === target.id
-                      ? { ...t, x: event.target.x(), y: event.target.y() }
-                      : t
-                  )
-                );
+                console.log(target, event.target.x(), event.target.y());
+                setLayerData({
+                  ...layerData,
+                  nodes: {
+                    ...layerData.nodes,
+                    targetPosition: layerData.nodes.targetPosition?.map((p) =>
+                      `target-${p.id}` === target.id
+                        ? { ...p, x: event.target.x(), y: event.target.y() }
+                        : p
+                    ),
+                  },
+                });
               }
             }}
           />

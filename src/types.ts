@@ -1,3 +1,12 @@
+import { App } from "electron";
+import { Layer as ELayer } from "konva/lib/Layer";
+
+export type Nodes = {
+  nodes: NodeStructure[];
+  targetStyle?: TargetStyle[];
+  targetPosition?: TargetPosition[];
+};
+
 export type Target = {
   id: string;
   connections?: string[];
@@ -33,6 +42,20 @@ export type ConnectionStyle = {
   strokeWidth?: number;
 };
 
+export type Layer = {
+  name: string;
+  nodes: Nodes;
+  ref: ELayer | null;
+};
+
+export type AppState = {
+  layerList: Layer[];
+  size: {
+    width: number;
+    height: number;
+  };
+};
+
 export type OpenFile =
   | {
       isSuccess: true;
@@ -42,3 +65,5 @@ export type OpenFile =
       isSuccess: false;
       message: string;
     };
+
+export type SaveFile = AppState;

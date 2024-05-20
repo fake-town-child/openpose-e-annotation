@@ -1,6 +1,8 @@
 import {
   Connection,
   NodeStructure,
+  Nodes,
+  SaveFile,
   Target,
   TargetPosition,
   TargetStyle,
@@ -11,11 +13,7 @@ export const createNodes = ({
   nodes,
   targetStyle = [],
   targetPosition = [],
-}: {
-  nodes: NodeStructure[];
-  targetStyle?: TargetStyle[];
-  targetPosition?: TargetPosition[];
-}): {
+}: Nodes): {
   targets: Target[];
   connections: Connection[];
 } => {
@@ -70,7 +68,7 @@ export const createNodes = ({
     };
   });
 
-  console.log(targets, connections);
+  // console.log(targets, connections);
 
   return { targets, connections };
 };
@@ -121,18 +119,17 @@ export const TargetsToTargetPositions = (
   });
 };
 
-export type SaveFile = {
-  nodes: NodeStructure[];
-  targetStyle?: TargetStyle[];
-  targetPosition?: TargetPosition[];
-  size?: {
-    width: number;
-    height: number;
-  };
-};
-
 export const GenerateSaveFile = (saveObj: SaveFile) => {
-  return JSON.stringify(saveObj).toString();
+  const trurySaveObj = {
+    ...saveObj,
+    layerList: saveObj.layerList.map((layer) => {
+      return {
+        ...layer,
+        ref: null,
+      };
+    }),
+  };
+  return JSON.stringify(trurySaveObj).toString();
 };
 
 export const LoadSaveFile = (saveFile: Buffer): SaveFile => {

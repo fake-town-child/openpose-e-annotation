@@ -10,23 +10,21 @@ import {
   GenerateSaveFile,
   LoadSaveFile,
   PNGdataURLtoBuffer,
-  TargetsToTargetPositions,
-  createNodes,
 } from "./util";
 import {
   annotationLayerAtom,
+  appSateAtom,
   bgImgDataUrlAtom,
   canvasSizeAtom,
+  layerListAtom,
 } from "./stores/atom";
 
 const App: FC = () => {
-  const annotationLayerRef = useAtomValue(annotationLayerAtom);
   const setBgImgDataUrl = useSetAtom(bgImgDataUrlAtom);
   const [currentCanvasSize, setCanvasSize] = useAtom(canvasSizeAtom);
-  const [currentTargets, setCurrentTargets] = useAtom(currentTargetsAtom);
-  const setCurrentConnections = useSetAtom(currentConnectionsAtom);
+  const [layerList, setLayerList] = useAtom(layerListAtom);
 
-  const savedNodes = useAtomValue(savedNodesAtom);
+  const appState = useAtomValue(appSateAtom);
 
   useEffect(() => {
     window.electronAPI.onSaveFileReply((event, token, message) => {
@@ -38,16 +36,8 @@ const App: FC = () => {
       if (result && result.isSuccess) {
         switch (token) {
           case "openSaveJson": {
-            const { nodes, size, targetPosition, targetStyle } = LoadSaveFile(
-              result.data
-            );
-            const { connections, targets } = createNodes({
-              nodes,
-              targetPosition,
-              targetStyle,
-            });
-            setCurrentTargets(targets);
-            setCurrentConnections(connections);
+            const { layerList, size } = LoadSaveFile(result.data);
+            setLayerList(layerList);
             if (size) {
               setCanvasSize(size);
             }
@@ -71,9 +61,9 @@ const App: FC = () => {
         <button
           className="button"
           onClick={() => {
-            const dataURL = annotationLayerRef?.toDataURL({
-              pixelRatio: annotationLayerRef.parent
-                ? 1 / annotationLayerRef.parent?.scaleX()
+            const dataURL = appState.layerList[0].ref?.toDataURL({
+              pixelRatio: appState.layerList[0].ref.parent
+                ? 1 / appState.layerList[0].ref.parent?.scaleX()
                 : 1,
             });
             if (dataURL) {
@@ -94,7 +84,7 @@ const App: FC = () => {
           className="button"
           onClick={() => {
             window.electronAPI.openFile("openImage", {
-              // filters: [{ name: "Image", extensions: ["png", "jpg", "jpeg"] }],
+              filters: [{ name: "Image", extensions: ["png", "jpg", "jpeg"] }],
             });
           }}
         >
@@ -121,14 +111,7 @@ const App: FC = () => {
         <button
           className="button"
           onClick={() => {
-            const unSaveTargetPosition =
-              TargetsToTargetPositions(currentTargets);
-            const saveFile = GenerateSaveFile({
-              nodes: savedNodes.nodes,
-              targetStyle: savedNodes.targetStyle,
-              targetPosition: unSaveTargetPosition,
-              size: currentCanvasSize,
-            });
+            const saveFile = GenerateSaveFile(appState);
             window.electronAPI.saveFile(saveFile, "saveJson", {
               defaultPath: "save.json",
               filters: [{ name: "JSON", extensions: ["json"] }],

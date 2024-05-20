@@ -1,11 +1,31 @@
-import { atom } from "jotai";
-import { Layer } from "konva/lib/Layer";
+import { PrimitiveAtom, atom } from "jotai";
+import { splitAtom } from "jotai/utils";
+import { Layer as ELayer } from "konva/lib/Layer";
+import { AppState, Layer } from "../types";
+import { humanNodes } from "./define";
 
 export const bgImgDataUrlAtom = atom<string | null>(null);
 
-export const annotationLayerAtom = atom<Layer | null>(null);
+export const annotationLayerAtom = atom<ELayer | null>(null);
 
 export const canvasSizeAtom = atom<{ width: number; height: number }>({
   width: 1024,
   height: 1024,
 });
+
+export type LayerAtom = PrimitiveAtom<Layer>;
+
+const defaultLayer: Layer = {
+  name: "humanAnnotation",
+  nodes: humanNodes,
+  ref: null,
+};
+
+export const layerListAtom = atom<Layer[]>([defaultLayer]);
+
+export const layerListAtomsAtom = splitAtom(layerListAtom);
+
+export const appSateAtom = atom<AppState>((get) => ({
+  layerList: get(layerListAtom),
+  size: get(canvasSizeAtom),
+}));
