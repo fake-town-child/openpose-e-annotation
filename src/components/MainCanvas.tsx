@@ -75,13 +75,14 @@ const MainCanvas: FC = () => {
         containerWidth / canvasSize.width,
         containerHeight / canvasSize.height
       );
+
       if (stageRef.current && localAnnotationLayerRef.current) {
         stageRef.current.width(containerSize);
         stageRef.current.height(containerSize);
         stageRef.current.scale({ x: scale, y: scale });
         localAnnotationLayerRef.current.width(containerSize);
         localAnnotationLayerRef.current.height(containerSize);
-        localAnnotationLayerRef.current.scale({ x: scale, y: scale });
+        // localAnnotationLayerRef.current.scale({ x: scale, y: scale });
       }
       console.log(annotationLayer, localAnnotationLayerRef.current);
     }

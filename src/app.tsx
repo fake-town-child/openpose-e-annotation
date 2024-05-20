@@ -39,7 +39,9 @@ const App: FC = () => {
           className="button"
           onClick={() => {
             const dataURL = annotationLayerRef?.toDataURL({
-              pixelRatio: 1 / annotationLayerRef.scaleX(),
+              pixelRatio: annotationLayerRef.parent
+                ? 1 / annotationLayerRef.parent?.scaleX()
+                : 1,
             });
             if (dataURL) {
               window.electronAPI.saveFile(PNGdataURLtoBuffer(dataURL));
