@@ -32,8 +32,23 @@ export const currentConnectionsAtom = atom<Connection[]>(connections);
 
 const MainCanvas: FC = () => {
   const stageRef = useRef<EStage>(null);
-  const [annotationLayer, setAnnotationLayer] = useAtom<ELayer | null>(
-    annotationLayerAtom
+  const [annotationLayer, setAnnotationLayer] = useAtom(annotationLayerAtom);
+  const localAnnotationLayerRef = useRef<ELayer | null>(null);
+
+  useEffect(() => {
+    if (annotationLayer) {
+      console.log("annotationLayer", annotationLayer);
+    } else {
+      console.log("annotationLayer is null");
+    }
+  }, [annotationLayer]);
+
+  const setAnnotationLayerRef = useCallback(
+    (ref: ELayer) => {
+      localAnnotationLayerRef.current = ref;
+      setAnnotationLayer(ref);
+    },
+    [setAnnotationLayer, localAnnotationLayerRef]
   );
 
   const [canvasSize, setCanvasSize] = useAtom(canvasSizeAtom);
@@ -50,21 +65,25 @@ const MainCanvas: FC = () => {
 
   const FitToWindow = () => {
     const container = document.querySelector("#stage-parent");
-    console.log("fit to window", stageRef);
     if (container && stageRef) {
       const containerWidth = container.getBoundingClientRect().width;
       const containerHeight = container.getBoundingClientRect().height;
+
+      const containerSize = Math.min(containerWidth, containerHeight);
 
       const scale = Math.min(
         containerWidth / canvasSize.width,
         containerHeight / canvasSize.height
       );
-
-      if (stageRef.current) {
-        stageRef.current.width(canvasSize.width);
-        stageRef.current.height(canvasSize.height);
+      if (stageRef.current && localAnnotationLayerRef.current) {
+        stageRef.current.width(containerSize);
+        stageRef.current.height(containerSize);
         stageRef.current.scale({ x: scale, y: scale });
+        localAnnotationLayerRef.current.width(containerSize);
+        localAnnotationLayerRef.current.height(containerSize);
+        localAnnotationLayerRef.current.scale({ x: scale, y: scale });
       }
+      console.log(annotationLayer, localAnnotationLayerRef.current);
     }
   };
 
@@ -73,7 +92,7 @@ const MainCanvas: FC = () => {
     () => {
       FitToWindow();
     },
-    [canvasSize]
+    [canvasSize, annotationLayer]
   );
 
   useEffect(() => {
@@ -94,7 +113,7 @@ const MainCanvas: FC = () => {
       ref={stageRef}
       id="stage"
     >
-      <Layer ref={setAnnotationLayer}>
+      <Layer>
         {bgImgDataUrl ? (
           <ImageObj
             src={bgImgDataUrl}
@@ -110,7 +129,11 @@ const MainCanvas: FC = () => {
           />
         ) : null}
       </Layer>
-      <Layer>
+      <Layer
+        ref={setAnnotationLayerRef}
+        width={canvasSize.width}
+        height={canvasSize.height}
+      >
         {currentConnections.map((connection) => {
           const from = currentTargets.find(
             (target) => target.id === connection.from

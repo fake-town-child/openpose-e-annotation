@@ -38,7 +38,9 @@ const App: FC = () => {
         <button
           className="button"
           onClick={() => {
-            const dataURL = annotationLayerRef?.toDataURL();
+            const dataURL = annotationLayerRef?.toDataURL({
+              pixelRatio: 1 / annotationLayerRef.scaleX(),
+            });
             if (dataURL) {
               window.electronAPI.saveFile(PNGdataURLtoBuffer(dataURL));
             }
@@ -53,6 +55,14 @@ const App: FC = () => {
           }}
         >
           open
+        </button>
+        <button
+          className="button"
+          onClick={() => {
+            setCanvasSize({ width: 512, height: 512 });
+          }}
+        >
+          canvas size change 5
         </button>
         <button
           className="button"
