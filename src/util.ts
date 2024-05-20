@@ -108,3 +108,34 @@ export const BufferToPNGDataURL = (buffer: Buffer): string => {
   const base64Data = btoa(binaryString);
   return `data:image/png;base64,${base64Data}`;
 };
+
+export const TargetsToTargetPositions = (
+  targets: Target[]
+): TargetPosition[] => {
+  return targets.map((target) => {
+    return {
+      id: target.id.replace("target-", ""),
+      x: target.x,
+      y: target.y,
+    };
+  });
+};
+
+export type SaveFile = {
+  nodes: NodeStructure[];
+  targetStyle?: TargetStyle[];
+  targetPosition?: TargetPosition[];
+  size?: {
+    width: number;
+    height: number;
+  };
+};
+
+export const GenerateSaveFile = (saveObj: SaveFile) => {
+  return JSON.stringify(saveObj).toString();
+};
+
+export const LoadSaveFile = (saveFile: Buffer): SaveFile => {
+  const stringSaveFile = arrayBufferToBinaryString(saveFile);
+  return JSON.parse(stringSaveFile) as SaveFile;
+};

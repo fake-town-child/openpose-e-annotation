@@ -23,11 +23,18 @@ let mainWindow: BrowserWindow | null = null;
 const addIpcListner = (): void => {
   ipcMain.on(
     "save-file-dialog",
-    async (event, data: string | Buffer, payload?: SaveDialogOptions) => {
+    async (
+      event,
+      data: string | Buffer,
+      token: string,
+      payload?: SaveDialogOptions
+    ) => {
       if (!mainWindow) {
-        event.reply("save-file-dialog", "No main window found");
+        event.reply("save-file-dialog", token, "No main window found");
         return;
       }
+
+      console.log("save file dialog", payload);
 
       const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
         ...payload,
@@ -36,9 +43,9 @@ const addIpcListner = (): void => {
       if (!canceled && filePath) {
         fs.writeFile(filePath, data, (err) => {
           if (err) {
-            event.reply("save-file-reply", err);
+            event.reply("save-file-reply", token, err);
           } else {
-            event.reply("save-file-reply", "File saved successfully");
+            event.reply("save-file-reply", token, "File saved successfully");
           }
         });
       } else {
@@ -47,43 +54,46 @@ const addIpcListner = (): void => {
     }
   );
 
-  ipcMain.on("open-file-dialog", async (event, payload?: OpenDialogOptions) => {
-    if (!mainWindow) {
-      event.reply("open-file-reply", {
-        isSuccess: false,
-        message: "No main window",
+  ipcMain.on(
+    "open-file-dialog",
+    async (event, token, payload?: OpenDialogOptions) => {
+      if (!mainWindow) {
+        event.reply("open-file-reply", token, {
+          isSuccess: false,
+          message: "No main window",
+        });
+        return;
+      }
+
+      console.log("open-file-dialog");
+
+      const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+        ...payload,
       });
-      return;
+
+      if (!canceled && filePaths.length > 0) {
+        const filePath = filePaths[0];
+        fs.readFile(filePath, (err, data) => {
+          if (err) {
+            event.reply("open-file-reply", token, {
+              isSuccess: false,
+              message: err.message,
+            });
+          } else {
+            event.reply("open-file-reply", token, {
+              isSuccess: true,
+              data,
+            });
+          }
+        });
+      } else {
+        event.reply("open-file-reply", {
+          isSuccess: false,
+          message: "File not opened",
+        });
+      }
     }
-
-    console.log("open-file-dialog");
-
-    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-      ...payload,
-    });
-
-    if (!canceled && filePaths.length > 0) {
-      const filePath = filePaths[0];
-      fs.readFile(filePath, (err, data) => {
-        if (err) {
-          event.reply("open-file-reply", {
-            isSuccess: false,
-            message: err.message,
-          });
-        } else {
-          event.reply("open-file-reply", {
-            isSuccess: true,
-            data,
-          });
-        }
-      });
-    } else {
-      event.reply("open-file-reply", {
-        isSuccess: false,
-        message: "File not opened",
-      });
-    }
-  });
+  );
 };
 
 const createWindow = (): void => {

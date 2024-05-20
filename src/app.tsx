@@ -2,9 +2,17 @@ import { FC, useEffect } from "react";
 import MainCanvas, {
   currentConnectionsAtom,
   currentTargetsAtom,
+  savedNodesAtom,
 } from "./components/MainCanvas";
-import { useAtomValue, useSetAtom } from "jotai";
-import { BufferToPNGDataURL, PNGdataURLtoBuffer, createNodes } from "./util";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import {
+  BufferToPNGDataURL,
+  GenerateSaveFile,
+  LoadSaveFile,
+  PNGdataURLtoBuffer,
+  TargetsToTargetPositions,
+  createNodes,
+} from "./util";
 import {
   annotationLayerAtom,
   bgImgDataUrlAtom,
@@ -14,19 +22,44 @@ import {
 const App: FC = () => {
   const annotationLayerRef = useAtomValue(annotationLayerAtom);
   const setBgImgDataUrl = useSetAtom(bgImgDataUrlAtom);
-
-  const setCanvasSize = useSetAtom(canvasSizeAtom);
-  const setCurrentTargets = useSetAtom(currentTargetsAtom);
+  const [currentCanvasSize, setCanvasSize] = useAtom(canvasSizeAtom);
+  const [currentTargets, setCurrentTargets] = useAtom(currentTargetsAtom);
   const setCurrentConnections = useSetAtom(currentConnectionsAtom);
 
+  const savedNodes = useAtomValue(savedNodesAtom);
+
   useEffect(() => {
-    window.electronAPI.onSaveFileReply((event, message) => {
+    window.electronAPI.onSaveFileReply((event, token, message) => {
       console.log(message);
     });
 
-    window.electronAPI.onOpenFileReply((event, result) => {
-      if (result.isSuccess) {
-        setBgImgDataUrl(BufferToPNGDataURL(result.data));
+    window.electronAPI.onOpenFileReply((event, token, result) => {
+      console.log(event);
+      if (result && result.isSuccess) {
+        switch (token) {
+          case "openSaveJson": {
+            const { nodes, size, targetPosition, targetStyle } = LoadSaveFile(
+              result.data
+            );
+            const { connections, targets } = createNodes({
+              nodes,
+              targetPosition,
+              targetStyle,
+            });
+            setCurrentTargets(targets);
+            setCurrentConnections(connections);
+            if (size) {
+              setCanvasSize(size);
+            }
+            break;
+          }
+          case "openImage": {
+            setBgImgDataUrl(BufferToPNGDataURL(result.data));
+            break;
+          }
+          default:
+            break;
+        }
       }
     });
   }, []);
@@ -44,7 +77,14 @@ const App: FC = () => {
                 : 1,
             });
             if (dataURL) {
-              window.electronAPI.saveFile(PNGdataURLtoBuffer(dataURL));
+              window.electronAPI.saveFile(
+                PNGdataURLtoBuffer(dataURL),
+                "saveImage",
+                {
+                  defaultPath: "save.png",
+                  filters: [{ name: "PNG", extensions: ["png"] }],
+                }
+              );
             }
           }}
         >
@@ -53,43 +93,49 @@ const App: FC = () => {
         <button
           className="button"
           onClick={() => {
-            window.electronAPI.openFile();
-          }}
-        >
-          open
-        </button>
-        <button
-          className="button"
-          onClick={() => {
-            setCanvasSize({ width: 512, height: 512 });
-          }}
-        >
-          canvas size change 5
-        </button>
-        <button
-          className="button"
-          onClick={() => {
-            setCanvasSize({ width: 1024, height: 1024 });
-          }}
-        >
-          canvas size change
-        </button>
-        <button
-          className="button"
-          onClick={() => {
-            const { targets, connections } = createNodes({
-              nodes: [
-                { start: "a", end: "b" },
-                { start: "b", end: "c" },
-                { start: "b", end: "d", color: "#12FF12" },
-              ],
+            window.electronAPI.openFile("openImage", {
+              // filters: [{ name: "Image", extensions: ["png", "jpg", "jpeg"] }],
             });
-
-            setCurrentTargets(targets);
-            // setCurrentConnections(connections);
           }}
         >
-          reset nodes
+          open image
+        </button>
+        <button
+          className="button"
+          onClick={() => {
+            window.electronAPI.openFile("openSaveJson", {
+              filters: [{ name: "JSON", extensions: ["json"] }],
+            });
+          }}
+        >
+          open json
+        </button>
+        <button
+          className="button"
+          onClick={() => {
+            setCanvasSize({ width: 1024, height: 512 });
+          }}
+        >
+          change size
+        </button>
+        <button
+          className="button"
+          onClick={() => {
+            const unSaveTargetPosition =
+              TargetsToTargetPositions(currentTargets);
+            const saveFile = GenerateSaveFile({
+              nodes: savedNodes.nodes,
+              targetStyle: savedNodes.targetStyle,
+              targetPosition: unSaveTargetPosition,
+              size: currentCanvasSize,
+            });
+            window.electronAPI.saveFile(saveFile, "saveJson", {
+              defaultPath: "save.json",
+              filters: [{ name: "JSON", extensions: ["json"] }],
+            });
+          }}
+        >
+          save json
         </button>
       </aside>
       <main id="stage-parent">
