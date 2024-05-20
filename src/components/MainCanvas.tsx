@@ -105,14 +105,6 @@ const MainCanvas: FC = () => {
   const [annotationLayer, setAnnotationLayer] = useAtom(annotationLayerAtom);
   const localAnnotationLayerRef = useRef<ELayer | null>(null);
 
-  useEffect(() => {
-    if (annotationLayer) {
-      console.log("annotationLayer", annotationLayer);
-    } else {
-      console.log("annotationLayer is null");
-    }
-  }, [annotationLayer]);
-
   const setAnnotationLayerRef = useCallback(
     (ref: ELayer) => {
       localAnnotationLayerRef.current = ref;
