@@ -24,46 +24,6 @@ const App: FC = () => {
 
   const appState = useAtomValue(appSateAtom);
 
-  // useEffect(() => {
-  //   console.log("setapi", layerList);
-  //   window.electronAPI.onSaveFileReply((event, token, message) => {
-  //     console.log(message);
-  //   });
-  //   window.electronAPI.onOpenFileReply((event, token, result) => {
-  //     if (result && result.isSuccess) {
-  //       switch (token) {
-  //         case "openSaveJson": {
-  //           const { layerList, size } = LoadSaveFile(result.data);
-  //           setLayerList(layerList);
-  //           if (size) {
-  //             setCanvasSize(size);
-  //           }
-  //           break;
-  //         }
-  //         case "openImage": {
-  //           console.log("open image2", layerList);
-  //           const newLayerList: Layer[] = [
-  //             {
-  //               name: "bgImage",
-  //               type: "image",
-  //               src: BufferToPNGDataURL(result.data),
-  //               ref: null,
-  //             },
-  //             ...layerList,
-  //           ];
-  //           console.log(newLayerList);
-  //           setLayerList(newLayerList);
-  //           console.log("app", layerList);
-  //           // setBgImgDataUrl(BufferToPNGDataURL(result.data));
-  //           break;
-  //         }
-  //         default:
-  //           break;
-  //       }
-  //     }
-  //   });
-  // }, [layerList, setLayerList]);
-
   return (
     <div className="app-container">
       <aside>

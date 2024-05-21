@@ -4,7 +4,6 @@ import {
   SaveDialogOptions,
   dialog,
   ipcMain,
-  ipcRenderer,
 } from "electron";
 import fs from "fs";
 
@@ -83,23 +82,6 @@ export const registerAPIHandlers = (
       }
     }
   );
-};
-
-/** rendererプロセスでAPIを呼び出すためのオブジェクトを生成する。preloadファイルで呼び出し、rendererプロセスに作成したオブジェクトを公開する。*/
-export const createAPIInvoker = (
-  apiHandlersObj: (...args: any[]) => Record<string, (...args: any[]) => any>
-) => {
-  const apiRenderer: Record<string, (...args: any[]) => Promise<any>> = {};
-
-  //API定義オブジェクト(apiHandlerObj)のプロパティを、１つずつipcMainの「invoke-api」イベントと接続する。
-  console.log(apiHandlersObj());
-  for (const apiName in apiHandlersObj()) {
-    apiRenderer[apiName] = async (...args: any[]) => {
-      return await ipcRenderer.invoke("invoke-api", apiName, ...args); //プロパティ名をapiName引数として渡し、各種APIにアクセスできるようにする。
-    };
-  }
-
-  return apiRenderer; //for文で生成された、APIアクセス用のオブジェクトを返す
 };
 
 /** APIの型定義。renderer.d.tsファイルで参照する。*/

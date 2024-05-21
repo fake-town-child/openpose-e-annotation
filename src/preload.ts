@@ -1,49 +1,38 @@
-import { SaveDialogOptions, contextBridge, ipcRenderer } from "electron";
-import { OpenFile } from "./types";
-import { API, apiHandlers, createAPIInvoker } from "./main/api/apiHandler";
+import { contextBridge, ipcRenderer } from "electron";
+import { API } from "./main/api/apiHandler";
 
-const APIRenderer = createAPIInvoker(apiHandlers);
+// APIの名前を列挙
+const apiHandlersName = [
+  "getFileNameWithSaveDialog",
+  "getFileNamesWithOpenDialog",
+  "getFile",
+  "saveFile",
+] as const;
+
+/** rendererプロセスでAPIを呼び出すためのオブジェクトを生成する。preloadファイルで呼び出し、rendererプロセスに作成したオブジェクトを公開する。*/
+const createAPIInvoker = (
+  // apiHandlersObj: Record<string, (...args: any[]) => any>
+  apiHandlerName: readonly string[]
+) => {
+  const apiRenderer: Record<string, (...args: any[]) => Promise<any>> = {};
+
+  //API定義オブジェクト(apiHandlerObj)のプロパティを、１つずつipcMainの「invoke-api」イベントと接続する。
+  apiHandlerName.forEach((apiName) => {
+    console.log(apiName);
+    apiRenderer[apiName] = async (...args: any[]) => {
+      return await ipcRenderer.invoke("invoke-api", apiName, ...args); //プロパティ名をapiName引数として渡し、各種APIにアクセスできるようにする。
+    };
+  });
+
+  console.log(apiHandlerName, apiRenderer);
+  return apiRenderer; //for文で生成された、APIアクセス用のオブジェクトを返す
+};
+
+const APIRenderer = createAPIInvoker(apiHandlersName);
 contextBridge.exposeInMainWorld("electronAPI", APIRenderer);
-
-// contextBridge.exposeInMainWorld("electronAPI", {
-//   saveFile: (
-//     data: string | Buffer,
-//     payload?: SaveDialogOptions
-//   ) => ipcRenderer.invoke("save-file-dialog", data,  payload),
-//   onSaveFileReply: (
-//     callback: (event: Electron.IpcRendererEvent, message: string) => void
-//   ) => ipcRenderer.on("save-file-reply", callback),
-//   openFile: ( payload?: SaveDialogOptions) =>
-//     ipcRenderer.invoke("open-file-dialog",  payload),
-//   onOpenFileReply: (
-//     callback: (event: Electron.IpcRendererEvent, result: OpenFile) => void
-//   ) => ipcRenderer.on("open-file-reply", callback),
-// });
 
 declare global {
   interface Window {
     electronAPI: API;
   }
 }
-
-// export interface IMainProcess {
-//   saveFile: (
-//     data: string | Buffer,
-//     payload?: SaveDialogOptions
-//   ) => void;
-//   onSaveFileReply: (
-//     callback: (
-//       event: Electron.IpcRendererEvent,
-//       token: string,
-//       message: string
-//     ) => void
-//   ) => void;
-//   openFile: (token: string, payload?: SaveDialogOptions) => void;
-//   onOpenFileReply: (
-//     callback: (
-//       event: Electron.IpcRendererEvent,
-//       token: string,
-//       result: OpenFile
-//     ) => void
-//   ) => void;
-// }
