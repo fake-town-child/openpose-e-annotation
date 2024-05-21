@@ -14,6 +14,7 @@ import {
   isSaveImageModeAtom,
   layerListAtom,
 } from "./stores/atom";
+import { Layer } from "@/types";
 
 const App: FC = () => {
   const setBgImgDataUrl = useSetAtom(bgImgDataUrlAtom);
@@ -23,33 +24,45 @@ const App: FC = () => {
 
   const appState = useAtomValue(appSateAtom);
 
-  useEffect(() => {
-    window.electronAPI.onSaveFileReply((event, token, message) => {
-      console.log(message);
-    });
-
-    window.electronAPI.onOpenFileReply((event, token, result) => {
-      console.log(event);
-      if (result && result.isSuccess) {
-        switch (token) {
-          case "openSaveJson": {
-            const { layerList, size } = LoadSaveFile(result.data);
-            setLayerList(layerList);
-            if (size) {
-              setCanvasSize(size);
-            }
-            break;
-          }
-          case "openImage": {
-            setBgImgDataUrl(BufferToPNGDataURL(result.data));
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   console.log("setapi", layerList);
+  //   window.electronAPI.onSaveFileReply((event, token, message) => {
+  //     console.log(message);
+  //   });
+  //   window.electronAPI.onOpenFileReply((event, token, result) => {
+  //     if (result && result.isSuccess) {
+  //       switch (token) {
+  //         case "openSaveJson": {
+  //           const { layerList, size } = LoadSaveFile(result.data);
+  //           setLayerList(layerList);
+  //           if (size) {
+  //             setCanvasSize(size);
+  //           }
+  //           break;
+  //         }
+  //         case "openImage": {
+  //           console.log("open image2", layerList);
+  //           const newLayerList: Layer[] = [
+  //             {
+  //               name: "bgImage",
+  //               type: "image",
+  //               src: BufferToPNGDataURL(result.data),
+  //               ref: null,
+  //             },
+  //             ...layerList,
+  //           ];
+  //           console.log(newLayerList);
+  //           setLayerList(newLayerList);
+  //           console.log("app", layerList);
+  //           // setBgImgDataUrl(BufferToPNGDataURL(result.data));
+  //           break;
+  //         }
+  //         default:
+  //           break;
+  //       }
+  //     }
+  //   });
+  // }, [layerList, setLayerList]);
 
   return (
     <div className="app-container">
@@ -65,14 +78,26 @@ const App: FC = () => {
                 : 1,
             });
             if (dataURL) {
-              window.electronAPI.saveFile(
-                PNGdataURLtoBuffer(dataURL),
-                "saveImage",
-                {
-                  defaultPath: "save.png",
-                  filters: [{ name: "PNG", extensions: ["png"] }],
-                }
-              );
+              window.electronAPI
+                .getFileNameWithSaveDialog({
+                  payload: {
+                    defaultPath: "save.png",
+                    filters: [{ name: "PNG", extensions: ["png"] }],
+                  },
+                })
+                .then((filePath) => {
+                  window.electronAPI
+                    .saveFile({
+                      filePath: filePath,
+                      data: PNGdataURLtoBuffer(dataURL),
+                    })
+                    .then((result) => {
+                      console.log("save success");
+                    });
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
             }
             setIsSaveImageMode(false);
           }}
@@ -82,9 +107,36 @@ const App: FC = () => {
         <button
           className="button"
           onClick={() => {
-            window.electronAPI.openFile("openImage", {
-              filters: [{ name: "Image", extensions: ["png", "jpg", "jpeg"] }],
-            });
+            console.log("open image", layerList);
+            window.electronAPI
+              .getFileNamesWithOpenDialog({
+                payload: {
+                  filters: [
+                    { name: "Image", extensions: ["png", "jpg", "jpeg"] },
+                  ],
+                  properties: ["openFile"],
+                },
+              })
+              .then((filePaths) => {
+                const filePath = filePaths[0];
+                window.electronAPI
+                  .getFile({ filePath: filePath })
+                  .then((data) => {
+                    const newLayerList: Layer[] = [
+                      {
+                        name: "bgImage",
+                        type: "image",
+                        src: BufferToPNGDataURL(data),
+                        ref: null,
+                      },
+                      ...layerList,
+                    ];
+                    setLayerList(newLayerList);
+                  });
+              })
+              .catch((err) => {
+                console.error(err);
+              });
           }}
         >
           open image
@@ -92,9 +144,25 @@ const App: FC = () => {
         <button
           className="button"
           onClick={() => {
-            window.electronAPI.openFile("openSaveJson", {
-              filters: [{ name: "JSON", extensions: ["json"] }],
-            });
+            window.electronAPI
+              .getFileNamesWithOpenDialog({
+                payload: {
+                  filters: [{ name: "JSON", extensions: ["json"] }],
+                  properties: ["openFile"],
+                },
+              })
+              .then((filePaths) => {
+                const filePath = filePaths[0];
+                window.electronAPI
+                  .getFile({ filePath: filePath })
+                  .then((data) => {
+                    const { layerList, size } = LoadSaveFile(data);
+                    setLayerList(layerList);
+                    if (size) {
+                      setCanvasSize(size);
+                    }
+                  });
+              });
           }}
         >
           open json
@@ -111,10 +179,23 @@ const App: FC = () => {
           className="button"
           onClick={() => {
             const saveFile = GenerateSaveFile(appState);
-            window.electronAPI.saveFile(saveFile, "saveJson", {
-              defaultPath: "save.json",
-              filters: [{ name: "JSON", extensions: ["json"] }],
-            });
+            window.electronAPI
+              .getFileNameWithSaveDialog({
+                payload: {
+                  defaultPath: "save.json",
+                  filters: [{ name: "JSON", extensions: ["json"] }],
+                },
+              })
+              .then((filePath) => {
+                window.electronAPI
+                  .saveFile({
+                    filePath: filePath,
+                    data: saveFile,
+                  })
+                  .then((result) => {
+                    console.log("save success");
+                  });
+              });
           }}
         >
           save json

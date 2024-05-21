@@ -17,6 +17,7 @@ export type LayerAtom = PrimitiveAtom<Layer>;
 
 const defaultLayer: Layer = {
   name: "humanAnnotation",
+  type: "annotation",
   nodes: humanNodes,
   ref: null,
 };

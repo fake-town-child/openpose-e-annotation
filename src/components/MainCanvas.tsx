@@ -11,11 +11,12 @@ import {
 } from "../stores/atom";
 import ImageObj from "./ImageObj";
 import AnnotationLayer from "./AnnotationLayer";
+import ImageLayer from "./ImageLayer";
 
 const MainCanvas: FC = () => {
   const stageRef = useRef<EStage>(null);
 
-  const [layerList, setLayerList] = useAtom(layerListAtom);
+  const layerList = useAtomValue(layerListAtom);
   const layerListAtoms = useAtomValue(layerListAtomsAtom);
 
   const [canvasSize, setCanvasSize] = useAtom(canvasSizeAtom);
@@ -48,6 +49,7 @@ const MainCanvas: FC = () => {
         stageRef.current.width(actualWidth);
         stageRef.current.height(actualHeight);
         stageRef.current.scale({ x: scale, y: scale });
+        console.log(layerList);
         layerList.forEach((layer) => {
           if (layer.ref) {
             layer.ref.width(containerSize);
@@ -83,7 +85,7 @@ const MainCanvas: FC = () => {
         e.evt.preventDefault();
       }}
     >
-      <Layer>
+      {/* <Layer>
         {bgImgDataUrl ? (
           <ImageObj
             src={bgImgDataUrl}
@@ -97,10 +99,18 @@ const MainCanvas: FC = () => {
             }}
           />
         ) : null}
-      </Layer>
-      {layerListAtoms.map((layer) => (
-        <AnnotationLayer key={String(layer)} layerAtom={layer} />
-      ))}
+      </Layer> */}
+      {layerListAtoms.map((layer, i) => {
+        console.log(layerList, layerListAtoms);
+        switch (layerList[i].type) {
+          case "annotation":
+            return (
+              <AnnotationLayer key={layerList[i].name} layerAtom={layer} />
+            );
+          case "image":
+            return <ImageLayer key={layerList[i].name} layerAtom={layer} />;
+        }
+      })}
     </Stage>
   );
 };

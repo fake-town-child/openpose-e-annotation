@@ -16,7 +16,8 @@
     "lib": ["es2020", "DOM"],
     "strict": true,
     "paths": {
-      "*": ["node_modules/*"]
+      "*": ["node_modules/*"],
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src/**/*"]

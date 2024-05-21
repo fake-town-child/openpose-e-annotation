@@ -17,19 +17,28 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
 
   const setLayerRef = useCallback(
     (ref: ELayer) => {
+      // if (!layerData.ref) {
+      console.log("setLayerRef", layerData);
       localLayerRef.current = ref;
       setLayerData({ ...layerData, ref });
+      // }
     },
     [setLayerData, localLayerRef]
   );
+
+  const canvasSize = useAtomValue(canvasSizeAtom);
+
+  const isSaveImageMode = useAtomValue(isSaveImageModeAtom);
+
+  if (layerData.type !== "annotation") {
+    return null;
+  }
 
   const { targets, connections } = createNodes({
     nodes: layerData.nodes.nodes,
     targetStyle: layerData.nodes.targetStyle,
     targetPosition: layerData.nodes.targetPosition,
   });
-
-  const canvasSize = useAtomValue(canvasSizeAtom);
 
   const connectionRefs = useRef<{
     [key in string]: ELine;
@@ -41,15 +50,9 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
     }
   }, []);
 
-  const isSaveImageMode = useAtomValue(isSaveImageModeAtom);
-
   return (
     <>
-      <Layer
-        ref={setLayerRef}
-        width={canvasSize.width}
-        height={canvasSize.height}
-      >
+      <Layer ref={setLayerRef}>
         {connections.map((connection) => {
           const from = targets.find((target) => target.id === connection.from);
           const to = targets.find((target) => target.id === connection.to);

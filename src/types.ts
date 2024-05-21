@@ -42,11 +42,21 @@ export type ConnectionStyle = {
   strokeWidth?: number;
 };
 
+export type LayerType = "annotation" | "image";
+
 export type Layer = {
   name: string;
-  nodes: Nodes;
   ref: ELayer | null;
-};
+} & (
+  | {
+      type: "annotation";
+      nodes: Nodes;
+    }
+  | {
+      type: "image";
+      src: string | null;
+    }
+);
 
 export type AppState = {
   layerList: Layer[];

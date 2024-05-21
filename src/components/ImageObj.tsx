@@ -1,12 +1,4 @@
-import { Image as EImage } from "konva/lib/shapes/Image";
-import {
-  ComponentProps,
-  FC,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ComponentProps, FC, useEffect, useState } from "react";
 import { Image } from "react-konva";
 
 type Props = {
