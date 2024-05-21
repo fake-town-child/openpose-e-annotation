@@ -1,4 +1,3 @@
-import { App } from "electron";
 import { Layer as ELayer } from "konva/lib/Layer";
 
 export type Nodes = {
@@ -35,6 +34,7 @@ export type TargetPosition = {
   id: string;
   x: number;
   y: number;
+  state?: "default" | "disabled";
 };
 
 export type ConnectionStyle = {

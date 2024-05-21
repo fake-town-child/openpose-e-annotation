@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue } from "jotai";
 import { FC, useCallback, useEffect, useRef } from "react";
 import { Circle, Layer, Line } from "react-konva";
-import { LayerAtom, canvasSizeAtom } from "../stores/atom";
+import { LayerAtom, canvasSizeAtom, isSaveImageModeAtom } from "../stores/atom";
 import { Line as ELine } from "konva/lib/shapes/Line";
 import { Layer as ELayer } from "konva/lib/Layer";
 import { createNodes } from "../util";
@@ -41,6 +41,8 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
     }
   }, []);
 
+  const isSaveImageMode = useAtomValue(isSaveImageModeAtom);
+
   return (
     <>
       <Layer
@@ -64,6 +66,13 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
               stroke={connection.color ?? "black"}
               ref={callbackRef}
               strokeWidth={connection.strokeWidth ?? 10}
+              opacity={
+                from.state === "disabled" && to.state === "disabled"
+                  ? isSaveImageMode
+                    ? 0
+                    : 0.5
+                  : 1
+              }
             />
           );
         })}
@@ -75,6 +84,9 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
             radius={20}
             shodowBlur={10}
             draggable={true}
+            opacity={
+              target.state === "disabled" ? (isSaveImageMode ? 0 : 0.5) : 1
+            }
             x={target.x}
             y={target.y}
             onDragMove={(event) => {
@@ -113,7 +125,6 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
                 (target) => target.id === event.target.id()
               );
               if (target) {
-                console.log(target, event.target.x(), event.target.y());
                 setLayerData({
                   ...layerData,
                   nodes: {
@@ -125,6 +136,33 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
                     ),
                   },
                 });
+              }
+            }}
+            onClick={(event) => {
+              if (event.evt.button == 2) {
+                const target = targets.find(
+                  (target) => target.id === event.target.id()
+                );
+                if (target) {
+                  setLayerData({
+                    ...layerData,
+                    nodes: {
+                      ...layerData.nodes,
+                      targetPosition: layerData.nodes.targetPosition?.map((p) =>
+                        `target-${p.id}` === target.id
+                          ? {
+                              ...p,
+                              state:
+                                target.state === "default" ||
+                                target.state === undefined
+                                  ? "disabled"
+                                  : "default",
+                            }
+                          : p
+                      ),
+                    },
+                  });
+                }
               }
             }}
           />

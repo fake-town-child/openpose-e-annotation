@@ -1,38 +1,16 @@
-import { Stage, Layer, Circle, Line } from "react-konva";
-import { FC, useCallback, useEffect, useRef } from "react";
-import {
-  Connection,
-  NodeStructure,
-  Target,
-  TargetPosition,
-  TargetStyle,
-} from "../types";
-import { createNodes } from "../util";
-import { Line as ELine } from "konva/lib/shapes/Line";
+import { Stage, Layer } from "react-konva";
+import { FC, useEffect, useRef } from "react";
 import { useWindowEvent } from "../hooks/windowEvent";
 import { Stage as EStage } from "konva/lib/Stage";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
-  annotationLayerAtom,
   bgImgDataUrlAtom,
   canvasSizeAtom,
   layerListAtom,
   layerListAtomsAtom,
 } from "../stores/atom";
 import ImageObj from "./ImageObj";
-import { Layer as ELayer } from "konva/lib/Layer";
-import { humanNodes } from "../stores/define";
 import AnnotationLayer from "./AnnotationLayer";
-
-const { targets, connections } = createNodes(humanNodes);
-
-export const savedNodesAtom = atom<{
-  nodes: NodeStructure[];
-  targetStyle?: TargetStyle[];
-  targetPosition?: TargetPosition[];
-}>(humanNodes);
-export const currentTargetsAtom = atom<Target[]>(targets);
-export const currentConnectionsAtom = atom<Connection[]>(connections);
 
 const MainCanvas: FC = () => {
   const stageRef = useRef<EStage>(null);
@@ -101,6 +79,9 @@ const MainCanvas: FC = () => {
       height={canvasSize.height}
       ref={stageRef}
       id="stage"
+      onClick={(e) => {
+        e.evt.preventDefault();
+      }}
     >
       <Layer>
         {bgImgDataUrl ? (
@@ -113,7 +94,6 @@ const MainCanvas: FC = () => {
                 width: img.naturalWidth,
                 height: img.naturalHeight,
               });
-              console.log(img.naturalWidth, img.naturalHeight);
             }}
           />
         ) : null}

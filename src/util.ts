@@ -1,12 +1,4 @@
-import {
-  Connection,
-  NodeStructure,
-  Nodes,
-  SaveFile,
-  Target,
-  TargetPosition,
-  TargetStyle,
-} from "./types";
+import { Connection, Nodes, SaveFile, Target, TargetPosition } from "./types";
 import { Buffer } from "buffer";
 
 export const createNodes = ({
@@ -43,11 +35,9 @@ export const createNodes = ({
     const containerHeight = container
       ? container.getBoundingClientRect().height
       : window.innerHeight;
-    const {
-      id: __,
-      x,
-      y,
-    } = targetPosition.find((position) => position.id === targetName) ?? {
+    const { id: __, ...omitIdPosition } = targetPosition.find(
+      (position) => position.id === targetName
+    ) ?? {
       id: "_",
       x: containerWidth * Math.random(),
       y: containerHeight * Math.random(),
@@ -55,8 +45,6 @@ export const createNodes = ({
 
     return {
       id: `target-${targetName}`,
-      x: x,
-      y: y,
       connections: connections
         .filter(
           (connection) =>
@@ -64,6 +52,7 @@ export const createNodes = ({
             connection.to === `target-${targetName}`
         )
         .map((connection) => connection.id),
+      ...omitIdPosition,
       ...omitIdStyle,
     };
   });
@@ -115,6 +104,7 @@ export const TargetsToTargetPositions = (
       id: target.id.replace("target-", ""),
       x: target.x,
       y: target.y,
+      disabled: target.state,
     };
   });
 };

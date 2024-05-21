@@ -1,9 +1,5 @@
 import { FC, useEffect } from "react";
-import MainCanvas, {
-  currentConnectionsAtom,
-  currentTargetsAtom,
-  savedNodesAtom,
-} from "./components/MainCanvas";
+import MainCanvas from "./components/MainCanvas";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   BufferToPNGDataURL,
@@ -12,10 +8,10 @@ import {
   PNGdataURLtoBuffer,
 } from "./util";
 import {
-  annotationLayerAtom,
   appSateAtom,
   bgImgDataUrlAtom,
   canvasSizeAtom,
+  isSaveImageModeAtom,
   layerListAtom,
 } from "./stores/atom";
 
@@ -23,6 +19,7 @@ const App: FC = () => {
   const setBgImgDataUrl = useSetAtom(bgImgDataUrlAtom);
   const [currentCanvasSize, setCanvasSize] = useAtom(canvasSizeAtom);
   const [layerList, setLayerList] = useAtom(layerListAtom);
+  const [isSaveImageMode, setIsSaveImageMode] = useAtom(isSaveImageModeAtom);
 
   const appState = useAtomValue(appSateAtom);
 
@@ -61,6 +58,7 @@ const App: FC = () => {
         <button
           className="button"
           onClick={() => {
+            setIsSaveImageMode(true);
             const dataURL = appState.layerList[0].ref?.toDataURL({
               pixelRatio: appState.layerList[0].ref.parent
                 ? 1 / appState.layerList[0].ref.parent?.scaleX()
@@ -76,9 +74,10 @@ const App: FC = () => {
                 }
               );
             }
+            setIsSaveImageMode(false);
           }}
         >
-          button
+          save image
         </button>
         <button
           className="button"

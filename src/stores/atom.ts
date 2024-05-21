@@ -29,3 +29,5 @@ export const appSateAtom = atom<AppState>((get) => ({
   layerList: get(layerListAtom),
   size: get(canvasSizeAtom),
 }));
+
+export const isSaveImageModeAtom = atom<boolean>(false);
