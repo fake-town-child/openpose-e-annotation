@@ -5,6 +5,10 @@ export const createNodes = ({
   nodes,
   targetStyle = [],
   targetPosition = [],
+  defaultTargetStyle = {
+    color: "#000000",
+    radius: 20,
+  },
 }: Nodes): {
   targets: Target[];
   connections: Connection[];
@@ -52,6 +56,7 @@ export const createNodes = ({
             connection.to === `target-${targetName}`
         )
         .map((connection) => connection.id),
+      ...defaultTargetStyle,
       ...omitIdPosition,
       ...omitIdStyle,
     };

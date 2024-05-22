@@ -4,6 +4,7 @@ export type Nodes = {
   nodes: NodeStructure[];
   targetStyle?: TargetStyle[];
   targetPosition?: TargetPosition[];
+  defaultTargetStyle?: Omit<TargetStyle, "id">;
 };
 
 export type Target = {
@@ -28,6 +29,7 @@ export type NodeStructure = {
 export type TargetStyle = {
   id: string;
   color?: string;
+  radius?: number;
 };
 
 export type TargetPosition = {

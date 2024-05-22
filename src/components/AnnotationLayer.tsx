@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue } from "jotai";
-import { FC, useCallback, useEffect, useRef } from "react";
+import { FC, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { Circle, Layer, Line } from "react-konva";
-import { LayerAtom, isSaveImageModeAtom } from "../stores/atom";
+import { LayerAtom, canvasSizeAtom, isSaveImageModeAtom } from "../stores/atom";
 import { Line as ELine } from "konva/lib/shapes/Line";
 import { Layer as ELayer } from "konva/lib/Layer";
 import { createNodes } from "../util";
@@ -12,6 +12,8 @@ type Props = {
 
 const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
   const [layerData, setLayerData] = useAtom(layerAtom);
+
+  const canvasSize = useAtomValue(canvasSizeAtom);
 
   const localLayerRef = useRef<ELayer | null>(null);
 
@@ -37,6 +39,28 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
     }
   }, []);
 
+  useLayoutEffect(() => {
+    if (layerData.type === "annotation") {
+      setLayerData({
+        ...layerData,
+        nodes: {
+          ...layerData.nodes,
+          defaultTargetStyle: {
+            ...layerData.nodes.defaultTargetStyle,
+            radius:
+              canvasSize.width > canvasSize.height
+                ? (20 / 1024) * canvasSize.height
+                : (20 / 1024) * canvasSize.width,
+          },
+        },
+      });
+    }
+  }, [canvasSize]);
+
+  useEffect(() => {
+    console.log(layerData);
+  });
+
   if (layerData.type !== "annotation") {
     return null;
   }
@@ -45,6 +69,7 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
     nodes: layerData.nodes.nodes,
     targetStyle: layerData.nodes.targetStyle,
     targetPosition: layerData.nodes.targetPosition,
+    defaultTargetStyle: layerData.nodes.defaultTargetStyle,
   });
 
   return (
@@ -81,8 +106,9 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
             key={target.id}
             id={target.id}
             fill={target.color ?? "black"}
-            radius={20}
-            shodowBlur={10}
+            radius={
+              target.radius ?? layerData.nodes.defaultTargetStyle?.radius ?? 20
+            }
             draggable={true}
             opacity={
               target.state === "disabled" ? (isSaveImageMode ? 0 : 0.5) : 1
