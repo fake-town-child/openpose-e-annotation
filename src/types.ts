@@ -47,6 +47,7 @@ export type LayerType = "annotation" | "image";
 export type Layer = {
   name: string;
   ref: ELayer | null;
+  visible?: boolean;
 } & (
   | {
       type: "annotation";

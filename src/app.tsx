@@ -67,7 +67,6 @@ const App: FC = () => {
         <button
           className="button"
           onClick={() => {
-            console.log("open image", layerList);
             window.electronAPI
               .getFileNamesWithOpenDialog({
                 payload: {
@@ -82,16 +81,17 @@ const App: FC = () => {
                 window.electronAPI
                   .getFile({ filePath: filePath })
                   .then((data) => {
-                    const newLayerList: Layer[] = [
-                      {
-                        name: "bgImage",
-                        type: "image",
-                        src: BufferToPNGDataURL(data),
-                        ref: null,
-                      },
-                      ...layerList,
-                    ];
-                    setLayerList(newLayerList);
+                    const newLayer: Layer = {
+                      name: "bgImage",
+                      type: "image",
+                      src: BufferToPNGDataURL(data),
+                      ref: null,
+                    };
+                    dispatchListAtoms({
+                      type: "insert",
+                      value: newLayer,
+                      before: layerListAtoms[0],
+                    });
                   });
               })
               .catch((err) => {

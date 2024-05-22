@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue } from "jotai";
 import { FC, useCallback, useEffect, useRef } from "react";
 import { Circle, Layer, Line } from "react-konva";
-import { LayerAtom, canvasSizeAtom, isSaveImageModeAtom } from "../stores/atom";
+import { LayerAtom, isSaveImageModeAtom } from "../stores/atom";
 import { Line as ELine } from "konva/lib/shapes/Line";
 import { Layer as ELayer } from "konva/lib/Layer";
 import { createNodes } from "../util";
@@ -17,28 +17,15 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
 
   const setLayerRef = useCallback(
     (ref: ELayer) => {
-      // if (!layerData.ref) {
-      console.log("setLayerRef", layerData);
-      localLayerRef.current = ref;
-      setLayerData({ ...layerData, ref });
-      // }
+      if (!localLayerRef.current) {
+        localLayerRef.current = ref;
+        setLayerData({ ...layerData, ref });
+      }
     },
-    [setLayerData, localLayerRef]
+    [setLayerData]
   );
 
-  const canvasSize = useAtomValue(canvasSizeAtom);
-
   const isSaveImageMode = useAtomValue(isSaveImageModeAtom);
-
-  if (layerData.type !== "annotation") {
-    return null;
-  }
-
-  const { targets, connections } = createNodes({
-    nodes: layerData.nodes.nodes,
-    targetStyle: layerData.nodes.targetStyle,
-    targetPosition: layerData.nodes.targetPosition,
-  });
 
   const connectionRefs = useRef<{
     [key in string]: ELine;
@@ -50,9 +37,19 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
     }
   }, []);
 
+  if (layerData.type !== "annotation") {
+    return null;
+  }
+
+  const { targets, connections } = createNodes({
+    nodes: layerData.nodes.nodes,
+    targetStyle: layerData.nodes.targetStyle,
+    targetPosition: layerData.nodes.targetPosition,
+  });
+
   return (
     <>
-      <Layer ref={setLayerRef}>
+      <Layer ref={setLayerRef} visible={layerData.visible ?? true}>
         {connections.map((connection) => {
           const from = targets.find((target) => target.id === connection.from);
           const to = targets.find((target) => target.id === connection.to);

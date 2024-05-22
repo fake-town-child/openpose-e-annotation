@@ -18,13 +18,11 @@ const createAPIInvoker = (
 
   //API定義オブジェクト(apiHandlerObj)のプロパティを、１つずつipcMainの「invoke-api」イベントと接続する。
   apiHandlerName.forEach((apiName) => {
-    console.log(apiName);
     apiRenderer[apiName] = async (...args: any[]) => {
       return await ipcRenderer.invoke("invoke-api", apiName, ...args); //プロパティ名をapiName引数として渡し、各種APIにアクセスできるようにする。
     };
   });
 
-  console.log(apiHandlerName, apiRenderer);
   return apiRenderer; //for文で生成された、APIアクセス用のオブジェクトを返す
 };
 
