@@ -4,7 +4,6 @@ import { useWindowEvent } from "../hooks/windowEvent";
 import { Stage as EStage } from "konva/lib/Stage";
 import { useAtom, useAtomValue } from "jotai";
 import {
-  bgImgDataUrlAtom,
   canvasSizeAtom,
   layerListAtom,
   layerListAtomsAtom,
@@ -73,8 +72,6 @@ const MainCanvas: FC = () => {
     FitToWindow();
   }, [canvasSize]);
 
-  const bgImgDataUrl = useAtomValue(bgImgDataUrlAtom);
-
   return (
     <Stage
       width={canvasSize.width}
@@ -109,6 +106,8 @@ const MainCanvas: FC = () => {
             );
           case "image":
             return <ImageLayer key={layerList[i].name} layerAtom={layer} />;
+          default:
+            return null;
         }
       })}
     </Stage>

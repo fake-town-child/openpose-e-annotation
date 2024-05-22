@@ -9,17 +9,17 @@ import {
 } from "./util";
 import {
   appSateAtom,
-  bgImgDataUrlAtom,
   canvasSizeAtom,
   isSaveImageModeAtom,
   layerListAtom,
+  layerListAtomsAtom,
 } from "./stores/atom";
 import { Layer } from "@/types";
 
 const App: FC = () => {
-  const setBgImgDataUrl = useSetAtom(bgImgDataUrlAtom);
   const [currentCanvasSize, setCanvasSize] = useAtom(canvasSizeAtom);
   const [layerList, setLayerList] = useAtom(layerListAtom);
+  const [layerListAtoms, dispatchListAtoms] = useAtom(layerListAtomsAtom);
   const [isSaveImageMode, setIsSaveImageMode] = useAtom(isSaveImageModeAtom);
 
   const appState = useAtomValue(appSateAtom);

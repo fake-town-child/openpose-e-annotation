@@ -4,10 +4,6 @@ import { Layer as ELayer } from "konva/lib/Layer";
 import { AppState, Layer } from "../types";
 import { humanNodes } from "./define";
 
-export const bgImgDataUrlAtom = atom<string | null>(null);
-
-export const annotationLayerAtom = atom<ELayer | null>(null);
-
 export const canvasSizeAtom = atom<{ width: number; height: number }>({
   width: 1024,
   height: 1024,
