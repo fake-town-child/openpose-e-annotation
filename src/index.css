@@ -19,20 +19,7 @@ body {
   & > main {
     /* background-color: aqua; */
     overflow: hidden;
-    flex-grow: 1;
-  }
-
-  & > aside {
-    background-color: aqua;
-    min-width: 200px;
-    max-width: 300px;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    gap: 4px;
-    & > button {
-      height: fit-content;
-    }
+    flex-grow: 9999;
   }
 }
 
@@ -49,13 +36,4 @@ body {
       border: 1px solid #000 !important;
     }
   }
-}
-
-.button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
 }

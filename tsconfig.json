@@ -16,9 +16,10 @@
     "lib": ["es2020", "DOM"],
     "strict": true,
     "paths": {
-      "*": ["node_modules/*"],
+      // "*": ["node_modules/*"],
       "@/*": ["./src/*"]
-    }
+    },
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*","**/*.ts","**/*.tsx"],
+  "exclude": ["node_modules"]
 }
