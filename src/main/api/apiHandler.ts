@@ -24,26 +24,18 @@ export const apiHandlers = (window: BrowserWindow) => ({
   }: {
     payload?: SaveDialogOptions;
   }) => {
-    const { canceled, filePath } = await dialog.showSaveDialog(window, {
+    return await dialog.showSaveDialog(window, {
       ...payload,
     });
-    if (canceled) {
-      throw new Error("File save dialog was canceled.");
-    }
-    return filePath;
   },
   getFileNamesWithOpenDialog: async ({
     payload,
   }: {
     payload?: OpenDialogOptions;
   }) => {
-    const { canceled, filePaths } = await dialog.showOpenDialog(window, {
+    return await dialog.showOpenDialog(window, {
       ...payload,
     });
-    if (canceled) {
-      throw new Error("File open dialog was canceled.");
-    }
-    return filePaths;
   },
 
   getFile: async ({ filePath }: { filePath: string }) => {
