@@ -1,11 +1,4 @@
 import {
-  canvasSizeAtom,
-  currentImgSrcFilepathAtom,
-  currentSaveFilepathAtom,
-  layerListAtom,
-} from "@/shared/stores/atom";
-import { LoadSaveFile } from "@/shared/util";
-import {
   VStack,
   Heading,
   InputGroup,
@@ -13,20 +6,17 @@ import {
   InputRightElement,
   Button,
   useToast,
+  HStack,
 } from "@chakra-ui/react";
-import { useAtom } from "jotai";
-import { FC } from "react";
+import { FC, useState } from "react";
+import { useLoadSaveFile } from "../hooks/useLoadSave";
 
 const SaveFileLoad: FC = () => {
   const toast = useToast();
-  const [currentSaveFilepath, setCurrentSaveFilepath] = useAtom(
-    currentSaveFilepathAtom
-  );
-  const [layerList, setLayerList] = useAtom(layerListAtom);
-  const [canvasSize, setCanvasSize] = useAtom(canvasSizeAtom);
-  const [currentImgSrcFilepath, setCurrentImgSrcFilepath] = useAtom(
-    currentImgSrcFilepathAtom
-  );
+
+  const [inputValue, setInputValue] = useState<string>("");
+
+  const { state, getSaveFile } = useLoadSaveFile();
 
   const setSavefileWithDialog = () => {
     window.electronAPI
@@ -39,33 +29,8 @@ const SaveFileLoad: FC = () => {
       .then(({ canceled, filePaths }) => {
         if (!canceled) {
           const filePath = filePaths[0];
-          setCurrentSaveFilepath(filePath);
+          setInputValue(filePath);
           getSaveFile(filePath);
-        }
-      })
-      .catch((err) => {
-        toast({
-          description: err.message,
-          status: "error",
-          size: "sm",
-          isClosable: true,
-          position: "top-right",
-        });
-        console.error(err);
-      });
-  };
-
-  const getSaveFile = (filePath: string) => {
-    window.electronAPI
-      .getFile({ filePath: filePath })
-      .then((data) => {
-        const { layerList, size, state } = LoadSaveFile(data);
-        setLayerList(layerList);
-        if (size) {
-          setCanvasSize(size);
-        }
-        if (state) {
-          setCurrentImgSrcFilepath(state.currentImgSrcFilepath);
         }
       })
       .catch((err) => {
@@ -86,9 +51,9 @@ const SaveFileLoad: FC = () => {
       <InputGroup size={"sm"}>
         <Input
           placeholder="Input save file path"
-          value={currentSaveFilepath}
+          value={inputValue}
           onChange={(e) => {
-            setCurrentSaveFilepath(e.target.value);
+            setInputValue(e.target.value);
           }}
         />
         <InputRightElement w="5rem">
@@ -102,16 +67,28 @@ const SaveFileLoad: FC = () => {
           </Button>
         </InputRightElement>
       </InputGroup>
-      <Button
-        size="sm"
-        onClick={() => {
-          if (currentSaveFilepath) {
-            getSaveFile(currentSaveFilepath);
-          }
-        }}
-      >
-        Load Savefile
-      </Button>
+      <HStack>
+        <Button
+          size="sm"
+          onClick={() => {
+            if (inputValue !== "") {
+              getSaveFile(inputValue);
+            }
+          }}
+          isLoading={state === "loading"}
+        >
+          Load Savefile
+        </Button>
+        <Button
+          size="sm"
+          onClick={() => {
+            setInputValue("");
+          }}
+          variant={"ghost"}
+        >
+          Clear input
+        </Button>
+      </HStack>
     </VStack>
   );
 };

@@ -1,11 +1,4 @@
 import {
-  layerListAtomsAtom,
-  currentImgSrcFilepathAtom,
-  currentSaveFilepathAtom,
-} from "@/shared/stores/atom";
-import { Layer } from "@/shared/types";
-import { BufferToPNGDataURL } from "@/shared/util";
-import {
   VStack,
   Heading,
   InputGroup,
@@ -13,51 +6,25 @@ import {
   InputRightElement,
   Button,
   useToast,
+  HStack,
 } from "@chakra-ui/react";
-import { useAtom, useAtomValue } from "jotai";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
+import { useLoadImage } from "../hooks/useLoadSave";
+import { currentImgSrcFilepathAtom } from "@/shared/stores/atom";
+import { useAtomValue } from "jotai";
 
 const ImageFileLoad: FC = () => {
   const toast = useToast();
-  const [layerListAtoms, dispatchListAtoms] = useAtom(layerListAtomsAtom);
-  const [currentImgSrcFilepath, setCurrentImgSrcFilepath] = useAtom(
-    currentImgSrcFilepathAtom
-  );
-  const currentSaveFilepath = useAtomValue(currentSaveFilepathAtom);
+  const [inputValue, setInputValue] = useState<string>("");
+  const currentImgSrcFilepath = useAtomValue(currentImgSrcFilepathAtom);
 
-  const isActive: boolean =
-    currentSaveFilepath === "" ||
-    currentSaveFilepath === null ||
-    currentSaveFilepath === undefined;
+  const { state, getImageFile } = useLoadImage();
 
-  const getImageFile = (filePath: string) => {
-    window.electronAPI
-      .getFile({ filePath: filePath })
-      .then((data) => {
-        const newLayer: Layer = {
-          name: "bgImage",
-          type: "image",
-          src: BufferToPNGDataURL(data),
-          ref: null,
-          filePath: filePath,
-        };
-        dispatchListAtoms({
-          type: "insert",
-          value: newLayer,
-          before: layerListAtoms[0],
-        });
-      })
-      .catch((err) => {
-        toast({
-          description: err.message,
-          status: "error",
-          size: "sm",
-          isClosable: true,
-          position: "top-right",
-        });
-        console.error(err);
-      });
-  };
+  useEffect(() => {
+    if (currentImgSrcFilepath) {
+      setInputValue(currentImgSrcFilepath);
+    }
+  }, [currentImgSrcFilepath]);
 
   const setImgSrcWithDialog = () => {
     window.electronAPI
@@ -70,7 +37,7 @@ const ImageFileLoad: FC = () => {
       .then(({ canceled, filePaths }) => {
         if (!canceled) {
           const filePath = filePaths[0];
-          setCurrentImgSrcFilepath(filePath);
+          setInputValue(filePath);
           getImageFile(filePath);
         }
       })
@@ -92,11 +59,10 @@ const ImageFileLoad: FC = () => {
       <InputGroup size={"sm"}>
         <Input
           placeholder="Input image file path"
-          value={currentImgSrcFilepath}
+          value={inputValue}
           onChange={(e) => {
-            setCurrentImgSrcFilepath(e.target.value);
+            setInputValue(e.target.value);
           }}
-          disabled={!isActive}
         />
         <InputRightElement w="5rem">
           <Button
@@ -104,23 +70,33 @@ const ImageFileLoad: FC = () => {
             onClick={() => {
               setImgSrcWithDialog();
             }}
-            isDisabled={!isActive}
           >
             Open File
           </Button>
         </InputRightElement>
       </InputGroup>
-      <Button
-        size="sm"
-        onClick={() => {
-          if (currentImgSrcFilepath) {
-            getImageFile(currentImgSrcFilepath);
-          }
-        }}
-        isDisabled={!isActive}
-      >
-        Load Image
-      </Button>
+      <HStack>
+        <Button
+          size="sm"
+          onClick={() => {
+            if (inputValue !== "") {
+              getImageFile(inputValue);
+            }
+          }}
+          isLoading={state === "loading"}
+        >
+          Load Image
+        </Button>
+        <Button
+          size="sm"
+          onClick={() => {
+            setInputValue("");
+          }}
+          variant={"ghost"}
+        >
+          Clear input
+        </Button>
+      </HStack>
     </VStack>
   );
 };
