@@ -21,15 +21,12 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
 
   const localLayerRef = useRef<ELayer | null>(null);
 
-  const setLayerRef = useCallback(
-    (ref: ELayer) => {
-      if (!localLayerRef.current) {
-        localLayerRef.current = ref;
-        setLayerData({ ...layerData, ref });
-      }
-    },
-    [setLayerData]
-  );
+  const setLayerRef = (ref: ELayer) => {
+    if (!localLayerRef.current) {
+      localLayerRef.current = ref;
+      setLayerData({ ...layerData, ref });
+    }
+  };
 
   const isSaveImageMode = useAtomValue(isSaveImageModeAtom);
 
@@ -45,6 +42,7 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
 
   useLayoutEffect(() => {
     if (layerData.type === "annotation") {
+      console.log(layerData);
       setLayerData({
         ...layerData,
         nodes: {
@@ -59,7 +57,7 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
         },
       });
     }
-  }, [canvasSize]);
+  }, []);
 
   if (layerData.type !== "annotation") {
     return null;

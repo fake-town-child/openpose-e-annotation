@@ -1,45 +1,20 @@
-import {
-  Box,
-  Button,
-  Divider,
-  Heading,
-  Input,
-  InputGroup,
-  InputRightElement,
-  VStack,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Divider, Text } from "@chakra-ui/react";
 import { FC } from "react";
+import ImageFileLoad from "./ImageFileLoad";
+import SaveFileLoad from "./SaveFileLoad";
 
 const SingleModeMenu: FC = () => {
-  const toast = useToast();
-
   return (
     <>
       <Divider />
-      <VStack align={"flex-start"}>
-        <Heading fontSize={"sm"}>Loading</Heading>
-        <InputGroup size={"sm"}>
-          <Input placeholder="Input image file path" />
-          <InputRightElement w="5rem">
-            <Button size="xs">Open File</Button>
-          </InputRightElement>
-        </InputGroup>
-        <Button
-          size="sm"
-          onClick={() => {
-            toast({
-              description: "hello",
-              status: "info",
-              size: "sm",
-              isClosable: true,
-              position: "top-right",
-            });
-          }}
-        >
-          Load Image
-        </Button>
-      </VStack>
+      <Box>
+        <Text fontSize="sm">
+          Note: If you load image or savefile, current state can be destroied
+        </Text>
+      </Box>
+      <ImageFileLoad />
+      <SaveFileLoad />
+      <Divider />
     </>
   );
 };

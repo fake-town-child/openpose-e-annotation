@@ -59,12 +59,15 @@ export type Layer = {
   | {
       type: "image";
       src: string | null;
+      filePath: string | null;
     }
 );
 
 export type AppMode = (typeof appModeDef)[number];
 
 export type CurrentImgSrcFilepath = string | undefined;
+
+export type CurrentSaveFilepath = string | undefined;
 
 export type AppState = {
   layerList: Layer[];
@@ -75,6 +78,7 @@ export type AppState = {
   state: {
     appMode: AppMode;
     currentImgSrcFilepath: CurrentImgSrcFilepath;
+    currentSaveFilepath: CurrentSaveFilepath;
   };
 };
 

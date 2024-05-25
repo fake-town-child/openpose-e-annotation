@@ -121,6 +121,7 @@ export const GenerateSaveFile = (saveObj: SaveFile) => {
       return {
         ...layer,
         ref: null,
+        src: null,
       };
     }),
   };

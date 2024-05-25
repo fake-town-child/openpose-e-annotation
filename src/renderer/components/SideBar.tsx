@@ -18,6 +18,7 @@ import { Select, Button, Box } from "@chakra-ui/react";
 import { useAtom, useAtomValue } from "jotai";
 import { FC } from "react";
 import SingleModeMenu from "./SingleModeMenu";
+import Debug from "./Debug";
 
 const Sidebar: FC = () => {
   const [currentCanvasSize, setCanvasSize] = useAtom(canvasSizeAtom);
@@ -51,8 +52,8 @@ const Sidebar: FC = () => {
             setAppMode(e.target.value as AppMode);
         }}
       >
-        <option value="Single">Single Image</option>
-        <option value="Directory">Directory</option>
+        <option value="Single">Single Image Mode</option>
+        <option value="Directory">Directory Mode</option>
       </Select>
       <Box>
         <Button
@@ -114,6 +115,7 @@ const Sidebar: FC = () => {
                         name: "bgImage",
                         type: "image",
                         src: BufferToPNGDataURL(data),
+                        filePath: filePath,
                         ref: null,
                       };
                       dispatchListAtoms({
@@ -192,6 +194,7 @@ const Sidebar: FC = () => {
         </Button>
       </Box>
       <SingleModeMenu />
+      <Debug />
     </Box>
   );
 };

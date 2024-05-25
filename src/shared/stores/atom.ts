@@ -6,7 +6,7 @@ import { humanNodes } from "./define";
 
 export const appModeDef = ["Single", "Directory"] as const;
 
-export const canvasSizeAtom = atom<{ width: number; height: number }>({
+export const canvasSizeAtom = atomWithReset<{ width: number; height: number }>({
   width: 1024,
   height: 1024,
 });
@@ -29,12 +29,17 @@ export const appModeAtom = atom<AppMode>("Single");
 export const currentImgSrcFilepathAtom =
   atomWithReset<CurrentImgSrcFilepath>(undefined);
 
+export const currentSaveFilepathAtom = atomWithReset<string | undefined>(
+  undefined
+);
+
 export const appStateAtom = atom<AppState>((get) => ({
   layerList: get(layerListAtom),
   size: get(canvasSizeAtom),
   state: {
     appMode: get(appModeAtom),
     currentImgSrcFilepath: get(currentImgSrcFilepathAtom),
+    currentSaveFilepath: get(currentSaveFilepathAtom),
   },
 }));
 
