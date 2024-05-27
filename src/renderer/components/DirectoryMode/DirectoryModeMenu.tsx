@@ -100,6 +100,7 @@ const DirectoryModeMenu: FC = () => {
           saveImage(filePath, annotationLayerNames);
         });
     }
+    loadFiles();
   };
 
   useMousetrap(
