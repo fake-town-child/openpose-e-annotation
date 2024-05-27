@@ -129,7 +129,7 @@ export const GenerateSaveFile = (saveObj: SaveFile) => {
 };
 
 export const LoadSaveFile = (saveFile: Buffer): SaveFile => {
-  const stringSaveFile = arrayBufferToBinaryString(saveFile);
+  const stringSaveFile = new TextDecoder().decode(saveFile);
   return JSON.parse(stringSaveFile) as SaveFile;
 };
 
