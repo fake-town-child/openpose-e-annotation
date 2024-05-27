@@ -1,4 +1,5 @@
 import {
+  Layer,
   NodeStructure,
   Nodes,
   TargetPosition,
@@ -66,3 +67,51 @@ export const humanNodes: Nodes = {
   targetStyle: humanBoneStyles,
   targetPosition: humanBonePositions,
 };
+
+export const wingBones: NodeStructure[] = [
+  { start: "upper_wing.R", end: "lower_wing.R", color: "#660033" },
+  { start: "lower_wing.R", end: "wing_tip.R", color: "#660066" },
+  { start: "upper_wing.L", end: "lower_wing.L", color: "#663333" },
+  { start: "lower_wing.L", end: "wing_tip.L", color: "#663366" },
+];
+
+export const wingBoneStyles: TargetStyle[] = [
+  { id: "upper_wing.R", color: "#0000AA" },
+  { id: "lower_wing.R", color: "#AA00AA" },
+  { id: "wing_tip.R", color: "#AAAAAA" },
+  { id: "upper_wing.L", color: "#0000DD" },
+  { id: "lower_wing.L", color: "#AA00DD" },
+  { id: "wing_tip.L", color: "#AADDDD" },
+];
+
+export const wingBonePositions: TargetPosition[] = [
+  { id: "upper_wing.R", x: 718.1591770848572, y: 213.25348806557608 },
+  { id: "lower_wing.R", x: 575.6593665904211, y: 166.8479595508545 },
+  { id: "wing_tip.R", x: 483.19635301106047, y: 247.07068423477963 },
+  { id: "upper_wing.L", x: 111.69884639373669, y: 208.54025506122994 },
+  { id: "lower_wing.L", x: 272.767392838366, y: 190.66477610889854 },
+  { id: "wing_tip.L", x: 363.0055042936804, y: 245.10235275592606 },
+];
+
+export const wingNodes: Nodes = {
+  nodes: wingBones,
+  targetStyle: wingBoneStyles,
+  targetPosition: wingBonePositions,
+};
+
+export const defaultLayers: Layer[] = [
+  {
+    name: "humanAnnotation",
+    type: "annotation",
+    nodes: humanNodes,
+    ref: null,
+  },
+  {
+    name: "wingAnnotation",
+    type: "annotation",
+    nodes: wingNodes,
+    ref: null,
+  },
+];
+
+export const annotationLayerNames = defaultLayers.map((layer) => layer.name);

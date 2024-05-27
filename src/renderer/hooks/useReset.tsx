@@ -6,8 +6,9 @@ import {
   layerListAtom,
   layerListAtomsAtom,
 } from "@/shared/stores/atom";
-import { humanNodes } from "@/shared/stores/define";
-import { useAtom } from "jotai";
+import { defaultLayers, humanNodes } from "@/shared/stores/define";
+import { Layer } from "@/shared/types";
+import { useAtom, useAtomValue } from "jotai";
 import { RESET } from "jotai/utils";
 
 export const useResetCampus = () => {
@@ -30,4 +31,29 @@ export const useResetCampus = () => {
     setCurrentSaveFilepath(RESET);
   };
   return { resetCampus };
+};
+export const useResetAnnotation = () => {
+  const [layerList, setLayerList] = useAtom(layerListAtom);
+  const canvasSize = useAtomValue(canvasSizeAtom);
+
+  const resetLayer: Layer[] = defaultLayers.map((layer) => {
+    return {
+      ...layer,
+      defaultTargetStyle: {
+        radius:
+          canvasSize.width > canvasSize.height
+            ? (20 / 1024) * canvasSize.height
+            : (20 / 1024) * canvasSize.width,
+      },
+    };
+  });
+
+  const resetAnnotation = () => {
+    setLayerList([
+      ...layerList.filter((layer) => layer.type === "image"),
+      ...resetLayer,
+    ]);
+  };
+
+  return { resetAnnotation };
 };

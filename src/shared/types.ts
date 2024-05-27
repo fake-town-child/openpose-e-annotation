@@ -73,11 +73,12 @@ export type DirectoryModeFile = {
   sourcePath: string;
   sourceFileName: string;
   isSavefileExists: boolean;
+  isAnnotationImageExists: boolean;
 };
 
 export type DirectoryModeState = {
   sourceDir?: string;
-  outputDIr?: string;
+  outputDir?: string;
   files: DirectoryModeFile[];
 };
 

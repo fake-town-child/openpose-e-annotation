@@ -5,7 +5,7 @@ import Sidebar from "./SideBar";
 
 const App: FC = () => {
   return (
-    <ChakraProvider>
+    <ChakraProvider resetCSS>
       <Box className="app-container" bgColor={"gray.50"}>
         <Sidebar />
         <main id="stage-parent">

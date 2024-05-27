@@ -4,6 +4,7 @@ import { useSaveImage, useSaveSavefile } from "../hooks/useLoadSave";
 import { appStateAtom } from "@/shared/stores/atom";
 import { useAtomValue } from "jotai";
 import { useMousetrap } from "../hooks/useMousetrap";
+import { annotationLayerNames } from "@/shared/stores/define";
 
 const FileSave: FC = () => {
   const { saveImage } = useSaveImage();
@@ -46,7 +47,7 @@ const FileSave: FC = () => {
               },
             })
             .then(({ canceled, filePath }) => {
-              !canceled && saveImage(filePath, ["humanAnnotation"]);
+              !canceled && saveImage(filePath, annotationLayerNames);
             });
         }}
       >

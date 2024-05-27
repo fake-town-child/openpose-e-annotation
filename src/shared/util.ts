@@ -132,3 +132,11 @@ export const LoadSaveFile = (saveFile: Buffer): SaveFile => {
   const stringSaveFile = arrayBufferToBinaryString(saveFile);
   return JSON.parse(stringSaveFile) as SaveFile;
 };
+
+export const ChangeExtension = (filename: string, extension: string) => {
+  return filename.replace(/\.[^/.]+$/, extension);
+};
+
+export const GetExtension = (filename: string) => {
+  return filename.split(".").pop();
+};

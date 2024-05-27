@@ -9,7 +9,7 @@ import {
   History,
   Layer,
 } from "../types";
-import { humanNodes } from "./define";
+import { defaultLayers, humanNodes } from "./define";
 
 export const appModeDef = ["Single", "Directory"] as const;
 
@@ -20,14 +20,7 @@ export const canvasSizeAtom = atomWithReset<{ width: number; height: number }>({
 
 export type LayerAtom = PrimitiveAtom<Layer>;
 
-const defaultLayer: Layer = {
-  name: "humanAnnotation",
-  type: "annotation",
-  nodes: humanNodes,
-  ref: null,
-};
-
-export const layerListAtom = atomWithReset<Layer[]>([defaultLayer]);
+export const layerListAtom = atomWithReset<Layer[]>(defaultLayers);
 
 export const layerListAtomsAtom = splitAtom(layerListAtom);
 
@@ -101,5 +94,5 @@ export const redoHistoryAtom = atom(
 export const DirectoryModeStateAtom = atomWithReset<DirectoryModeState>({
   files: [],
   sourceDir: "",
-  outputDIr: "",
+  outputDir: "",
 });

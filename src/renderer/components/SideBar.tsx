@@ -1,12 +1,13 @@
 import { appModeAtom, appModeDef } from "../../shared/stores/atom";
 import { AppMode } from "@/shared/types";
-import { Select, Box, Divider } from "@chakra-ui/react";
+import { Select, Box, Divider, Text } from "@chakra-ui/react";
 import { useAtom } from "jotai";
 import { FC } from "react";
 import SingleModeMenu from "./SingleModeMenu";
 import Debug from "./Debug";
 import CurrentStatus from "./CurrentStatus";
 import DirectoryModeMenu from "./DirectoryMode/DirectoryModeMenu";
+import Control from "./Control";
 
 const Sidebar: FC = () => {
   const [appMode, setAppMode] = useAtom(appModeAtom);
@@ -50,8 +51,13 @@ const Sidebar: FC = () => {
 
       <CurrentStatus />
       <Divider />
+      {/* <Debug /> */}
+      <Control />
+      <Divider />
       {switchMenu(appMode)}
-      <Debug />
+      <Text fontSize={"x-small"} color="gray.400">
+        v1.0.0
+      </Text>
     </Box>
   );
 };

@@ -10,6 +10,7 @@ import {
 import { DirectoryModeFile, Layer } from "@/shared/types";
 import {
   BufferToPNGDataURL,
+  ChangeExtension,
   GenerateSaveFile,
   LoadSaveFile,
   PNGdataURLtoBuffer,
@@ -213,11 +214,13 @@ export const useSaveSavefile = () => {
 
 export const useDirectoryMode = () => {
   const appState = useAtomValue(appStateAtom);
-  const [state, setState] = useState<"initial" | "loading" | "loaded">(
-    "initial"
-  );
+  const [state, setState] = useState<
+    "initial" | "loading" | "loaded" | "error"
+  >("initial");
 
-  const [files, setFiles] = useAtom(DirectoryModeStateAtom);
+  const [dirModeState, setDirModeState] = useAtom(DirectoryModeStateAtom);
+
+  const toast = useToast();
 
   const loadFiles = ({
     sourceDir,
@@ -226,8 +229,56 @@ export const useDirectoryMode = () => {
     sourceDir: string;
     outputDir: string;
   }) => {
+    setState("loading");
+    console.log(sourceDir, outputDir);
     window.electronAPI
       .getDirectoryFiles({ directoryPath: sourceDir })
-      .then((file) => {});
+      .then(async (files) => {
+        console.log(files);
+        const dirModeFiles: DirectoryModeFile[] = await Promise.all(
+          files.map(async (file) => {
+            const filename = await window.electronAPI.getBaseName({
+              filePath: file,
+            });
+            const isSavefileExists = await window.electronAPI.checkFileExists({
+              filePath: await window.electronAPI.joinPath({
+                paths: [outputDir, ChangeExtension(filename, ".json")],
+              }),
+            });
+            const isAnnotationImageExists =
+              await window.electronAPI.checkFileExists({
+                filePath: await window.electronAPI.joinPath({
+                  paths: [outputDir, ChangeExtension(filename, ".png")],
+                }),
+              });
+            return {
+              sourcePath: file,
+              sourceFileName: filename,
+              isSavefileExists: isSavefileExists,
+              isAnnotationImageExists: isAnnotationImageExists,
+            };
+          })
+        );
+        console.log(dirModeFiles);
+        setDirModeState({
+          sourceDir: sourceDir,
+          outputDir: outputDir,
+          files: dirModeFiles,
+        });
+        setState("loaded");
+      })
+      .catch((err) => {
+        console.error(err);
+        toast({
+          description: err.message,
+          status: "error",
+          size: "sm",
+          isClosable: true,
+          position: "top-right",
+        });
+        setState("error");
+      });
   };
+
+  return { loadFiles, state, dirModeState };
 };

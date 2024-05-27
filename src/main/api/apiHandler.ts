@@ -51,7 +51,7 @@ export const apiHandlers = (window: BrowserWindow) => ({
   }) => {
     return fs.promises.writeFile(filePath, data);
   },
-  checkFileExists: ({ filePath }: { filePath: string }) => {
+  checkFileExists: async ({ filePath }: { filePath: string }) => {
     return fs.existsSync(filePath);
   },
   getDirectoryFiles: async ({ directoryPath }: { directoryPath: string }) => {
@@ -66,8 +66,11 @@ export const apiHandlers = (window: BrowserWindow) => ({
         return result;
       });
   },
-  getBaseName: ({ filePath }: { filePath: string }) => {
+  getBaseName: async ({ filePath }: { filePath: string }) => {
     return path.basename(filePath);
+  },
+  joinPath: async ({ paths }: { paths: string[] }) => {
+    return path.join(...paths);
   },
 });
 
