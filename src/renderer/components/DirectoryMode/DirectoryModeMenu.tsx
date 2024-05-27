@@ -6,6 +6,7 @@ import {
   useSaveSavefile,
 } from "@/renderer/hooks/useLoadSave";
 import { useMousetrap } from "@/renderer/hooks/useMousetrap";
+import { useResetCampus } from "@/renderer/hooks/useReset";
 import { appStateAtom } from "@/shared/stores/atom";
 import { annotationLayerNames } from "@/shared/stores/define";
 import { ChangeExtension, GetExtension } from "@/shared/util";
@@ -34,15 +35,20 @@ import { FC, useState } from "react";
 import { MdArticle, MdDirectionsRun, MdFileOpen } from "react-icons/md";
 
 const DirectoryModeMenu: FC = () => {
-  const { loadFiles, state, dirModeState } = useDirectoryMode();
   const [sourceDirValue, setSourceDirValue] = useState<string>("");
   const [outputDirValue, setOutputDirValue] = useState<string>("");
+  const { loadFiles, state, dirModeState } = useDirectoryMode({
+    sourceDir: sourceDirValue,
+    outputDir: outputDirValue,
+  });
   const toast = useToast();
 
   const { saveSaveFile } = useSaveSavefile();
   const { saveImage } = useSaveImage();
   const { getImageFile } = useLoadImage();
   const { getSaveFile } = useLoadSaveFile();
+
+  const { resetCampus } = useResetCampus();
 
   const appState = useAtomValue(appStateAtom);
 
@@ -185,10 +191,7 @@ const DirectoryModeMenu: FC = () => {
       <Button
         size={"sm"}
         onClick={() => {
-          loadFiles({
-            sourceDir: sourceDirValue,
-            outputDir: outputDirValue,
-          });
+          loadFiles();
         }}
         isLoading={state === "loading"}
         isDisabled={!(sourceDirValue !== "" && outputDirValue !== "")}
@@ -221,6 +224,7 @@ const DirectoryModeMenu: FC = () => {
                           getSaveFile(filePath);
                         });
                     } else {
+                      resetCampus();
                       getImageFile(file.sourcePath);
                     }
                   }}

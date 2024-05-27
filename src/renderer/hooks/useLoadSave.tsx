@@ -212,7 +212,13 @@ export const useSaveSavefile = () => {
   return { saveSaveFile };
 };
 
-export const useDirectoryMode = () => {
+export const useDirectoryMode = ({
+  sourceDir,
+  outputDir,
+}: {
+  sourceDir: string;
+  outputDir: string;
+}) => {
   const appState = useAtomValue(appStateAtom);
   const [state, setState] = useState<
     "initial" | "loading" | "loaded" | "error"
@@ -222,13 +228,7 @@ export const useDirectoryMode = () => {
 
   const toast = useToast();
 
-  const loadFiles = ({
-    sourceDir,
-    outputDir,
-  }: {
-    sourceDir: string;
-    outputDir: string;
-  }) => {
+  const loadFiles = () => {
     setState("loading");
     console.log(sourceDir, outputDir);
     window.electronAPI

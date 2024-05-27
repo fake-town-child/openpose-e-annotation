@@ -8,9 +8,11 @@ import Debug from "./Debug";
 import CurrentStatus from "./CurrentStatus";
 import DirectoryModeMenu from "./DirectoryMode/DirectoryModeMenu";
 import Control from "./Control";
+import { useResetCampus } from "../hooks/useReset";
 
 const Sidebar: FC = () => {
   const [appMode, setAppMode] = useAtom(appModeAtom);
+  const { resetCampus } = useResetCampus();
 
   const switchMenu = (mode: AppMode) => {
     switch (mode) {
@@ -43,6 +45,7 @@ const Sidebar: FC = () => {
         onChange={(e) => {
           appModeDef.includes(e.target.value as AppMode) &&
             setAppMode(e.target.value as AppMode);
+          resetCampus();
         }}
       >
         <option value="Single">Single Image Mode</option>
@@ -56,7 +59,7 @@ const Sidebar: FC = () => {
       <Divider />
       {switchMenu(appMode)}
       <Text fontSize={"x-small"} color="gray.400">
-        v1.0.0
+        v1.0.1
       </Text>
     </Box>
   );
