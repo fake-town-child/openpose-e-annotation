@@ -2,6 +2,7 @@ import {
   canvasSizeAtom,
   currentImgSrcFilepathAtom,
   currentSaveFilepathAtom,
+  historyAtom,
   layerListAtom,
   layerListAtomsAtom,
 } from "@/shared/stores/atom";
@@ -18,10 +19,12 @@ export const useResetCampus = () => {
   const [currentSaveFilepath, setCurrentSaveFilepath] = useAtom(
     currentSaveFilepathAtom
   );
+  const [history, setHistory] = useAtom(historyAtom);
 
   const resetCampus = () => {
     setLayerList([]);
     setLayerList(RESET);
+    setHistory(RESET);
     setCampusSize(RESET);
     setCurrentImgSrcFilepath(RESET);
     setCurrentSaveFilepath(RESET);

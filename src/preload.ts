@@ -7,6 +7,9 @@ const apiHandlersName = [
   "getFileNamesWithOpenDialog",
   "getFile",
   "saveFile",
+  "checkFileExists",
+  "getDirectoryFiles",
+  "getBaseName",
 ] as const;
 
 /** rendererプロセスでAPIを呼び出すためのオブジェクトを生成する。preloadファイルで呼び出し、rendererプロセスに作成したオブジェクトを公開する。*/

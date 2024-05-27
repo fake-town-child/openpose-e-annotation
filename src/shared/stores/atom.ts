@@ -1,7 +1,14 @@
 import { PrimitiveAtom, atom } from "jotai";
 import { atomWithReset, splitAtom } from "jotai/utils";
 import { Layer as ELayer } from "konva/lib/Layer";
-import { AppMode, AppState, CurrentImgSrcFilepath, Layer } from "../types";
+import {
+  AppMode,
+  AppState,
+  CurrentImgSrcFilepath,
+  DirectoryModeState,
+  History,
+  Layer,
+} from "../types";
 import { humanNodes } from "./define";
 
 export const appModeDef = ["Single", "Directory"] as const;
@@ -37,10 +44,62 @@ export const appStateAtom = atom<AppState>((get) => ({
   layerList: get(layerListAtom),
   size: get(canvasSizeAtom),
   state: {
-    appMode: get(appModeAtom),
     currentImgSrcFilepath: get(currentImgSrcFilepathAtom),
     currentSaveFilepath: get(currentSaveFilepathAtom),
+  },
+  runtimeState: {
+    appMode: get(appModeAtom),
+    directoryMode: get(DirectoryModeStateAtom),
   },
 }));
 
 export const isSaveImageModeAtom = atom<boolean>(false);
+
+export const historyAtom = atomWithReset<History>({
+  layerList: [],
+  index: 0,
+});
+
+export const saveHistoryAtom = atom(null, (get, set) => {
+  const { layerList, index } = get(historyAtom);
+  set(historyAtom, {
+    layerList: [...layerList.slice(0, index + 1), get(layerListAtom)],
+    index: index + 1,
+  });
+});
+
+export const undoHistoryAtom = atom(
+  (get) => {
+    const { index } = get(historyAtom);
+    const canUndo = index > 0;
+    return canUndo;
+  },
+  (get, set) => {
+    const { index, layerList } = get(historyAtom);
+    if (index > 0) {
+      set(layerListAtom, layerList[index - 1]);
+      set(historyAtom, { layerList, index: index - 1 });
+    }
+  }
+);
+
+export const redoHistoryAtom = atom(
+  (get) => {
+    const { index, layerList } = get(historyAtom);
+    const canRedo = index < layerList.length - 1;
+    return canRedo;
+  },
+  (get, set) => {
+    const { index, layerList } = get(historyAtom);
+    if (index < layerList.length - 1) {
+      set(layerListAtom, layerList[index + 1]);
+      set(historyAtom, { layerList, index: index + 1 });
+    }
+  }
+);
+
+export const DirectoryModeStateAtom = atomWithReset<DirectoryModeState>({
+  files: [],
+  sourceDir: "",
+  outputDIr: "",
+});

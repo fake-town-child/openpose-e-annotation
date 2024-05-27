@@ -5,6 +5,7 @@ import {
   LayerAtom,
   canvasSizeAtom,
   isSaveImageModeAtom,
+  saveHistoryAtom,
 } from "../../shared/stores/atom";
 import { Line as ELine } from "konva/lib/shapes/Line";
 import { Layer as ELayer } from "konva/lib/Layer";
@@ -16,6 +17,7 @@ type Props = {
 
 const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
   const [layerData, setLayerData] = useAtom(layerAtom);
+  const [_, save] = useAtom(saveHistoryAtom);
 
   const canvasSize = useAtomValue(canvasSizeAtom);
 
@@ -56,6 +58,7 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
           },
         },
       });
+      save();
     }
   }, []);
 
@@ -160,6 +163,7 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
                     ),
                   },
                 });
+                save();
               }
             }}
             onClick={(event) => {
@@ -186,6 +190,7 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
                       ),
                     },
                   });
+                  save();
                 }
               }
             }}

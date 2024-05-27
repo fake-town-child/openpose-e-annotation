@@ -69,6 +69,18 @@ export type CurrentImgSrcFilepath = string | undefined;
 
 export type CurrentSaveFilepath = string | undefined;
 
+export type DirectoryModeFile = {
+  sourcePath: string;
+  sourceFileName: string;
+  isSavefileExists: boolean;
+};
+
+export type DirectoryModeState = {
+  sourceDir?: string;
+  outputDIr?: string;
+  files: DirectoryModeFile[];
+};
+
 export type AppState = {
   layerList: Layer[];
   size: {
@@ -76,9 +88,12 @@ export type AppState = {
     height: number;
   };
   state: {
-    appMode: AppMode;
     currentImgSrcFilepath: CurrentImgSrcFilepath;
     currentSaveFilepath: CurrentSaveFilepath;
+  };
+  runtimeState: {
+    appMode: AppMode;
+    directoryMode?: DirectoryModeState;
   };
 };
 
@@ -92,4 +107,9 @@ export type OpenFile =
       message: string;
     };
 
-export type SaveFile = AppState;
+export type SaveFile = Omit<AppState, "runtimeState">;
+
+export type History = {
+  layerList: Layer[][];
+  index: number;
+};

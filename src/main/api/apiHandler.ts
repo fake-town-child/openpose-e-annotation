@@ -6,6 +6,7 @@ import {
   ipcMain,
 } from "electron";
 import fs from "fs";
+import path from "path";
 
 // 参考
 // https://qiita.com/ForestMountain1234/items/2c85b7df6812be1e1f97
@@ -49,6 +50,24 @@ export const apiHandlers = (window: BrowserWindow) => ({
     data: Buffer | string;
   }) => {
     return fs.promises.writeFile(filePath, data);
+  },
+  checkFileExists: ({ filePath }: { filePath: string }) => {
+    return fs.existsSync(filePath);
+  },
+  getDirectoryFiles: async ({ directoryPath }: { directoryPath: string }) => {
+    return fs.promises
+      .readdir(directoryPath, { withFileTypes: true })
+      .then((dirents) => {
+        const result = dirents
+          .filter((dirent) => dirent.isFile())
+          .map((dirent) => {
+            return path.join(directoryPath, dirent.name);
+          });
+        return result;
+      });
+  },
+  getBaseName: ({ filePath }: { filePath: string }) => {
+    return path.basename(filePath);
   },
 });
 
