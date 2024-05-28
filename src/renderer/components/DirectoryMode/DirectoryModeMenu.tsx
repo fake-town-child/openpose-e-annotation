@@ -211,6 +211,7 @@ const DirectoryModeMenu: FC = () => {
               )
               .map((file) => (
                 <Tr
+                  key={file.sourceFileName}
                   cursor={"pointer"}
                   onDoubleClick={() => {
                     if (file.isSavefileExists) {

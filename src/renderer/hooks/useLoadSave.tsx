@@ -27,6 +27,8 @@ export const useLoadImage = () => {
     currentImgSrcFilepathAtom
   );
 
+  const { resetCampus } = useResetCampus();
+
   const toast = useToast();
 
   const [state, setState] = useState<
@@ -45,6 +47,7 @@ export const useLoadImage = () => {
           ref: null,
           filePath: filePath,
         };
+        resetCampus();
         dispatchListAtoms({
           type: "insert",
           value: newLayer,
@@ -103,6 +106,7 @@ export const useLoadSaveFile = () => {
         }
         setCurrentSaveFilepath(filePath);
         setState("loaded");
+        console.log("loaded", layerList, size, state);
       })
       .catch((err) => {
         toast({

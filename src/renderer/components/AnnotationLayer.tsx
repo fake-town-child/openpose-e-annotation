@@ -42,26 +42,6 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
     }
   }, []);
 
-  useLayoutEffect(() => {
-    if (layerData.type === "annotation") {
-      console.log(layerData);
-      setLayerData({
-        ...layerData,
-        nodes: {
-          ...layerData.nodes,
-          defaultTargetStyle: {
-            ...layerData.nodes.defaultTargetStyle,
-            radius:
-              canvasSize.width > canvasSize.height
-                ? (20 / 1024) * canvasSize.height
-                : (20 / 1024) * canvasSize.width,
-          },
-        },
-      });
-      save();
-    }
-  }, []);
-
   if (layerData.type !== "annotation") {
     return null;
   }

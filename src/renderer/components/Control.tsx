@@ -34,7 +34,7 @@ const Control: FC = () => {
   );
 
   return (
-    <ButtonGroup size="sm">
+    <ButtonGroup size="sm" flexWrap={"wrap"} rowGap={2}>
       <Button onClick={() => undo()} isDisabled={!canUndo}>
         Undo
       </Button>
@@ -43,6 +43,13 @@ const Control: FC = () => {
       </Button>
       <Button onClick={() => resetCampus()}>Reset All</Button>
       <Button onClick={() => resetAnnotation()}>Reset Annotation</Button>
+      <Button
+        onClick={() => {
+          console.log("");
+        }}
+      >
+        Reset Annotation(small)
+      </Button>
     </ButtonGroup>
   );
 };

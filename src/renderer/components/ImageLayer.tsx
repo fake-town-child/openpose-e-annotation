@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef } from "react";
+import { FC, memo, useCallback, useEffect, useRef } from "react";
 import {
   LayerAtom,
   appStateAtom,
@@ -10,6 +10,7 @@ import { useAtom, useAtomValue } from "jotai";
 import ImageObj from "./ImageObj";
 import { Layer as ELayer } from "konva/lib/Layer";
 import { BufferToPNGDataURL } from "@/shared/util";
+import { useResetAnnotation } from "../hooks/useReset";
 
 type Props = {
   layerAtom: LayerAtom;
@@ -19,6 +20,7 @@ const ImageLayer: FC<Props> = ({ layerAtom }) => {
   const [layerData, setLayerData] = useAtom(layerAtom);
   const [canvasSize, setCanvasSize] = useAtom(canvasSizeAtom);
   const appState = useAtomValue(appStateAtom);
+  const { resetAnnotation } = useResetAnnotation();
 
   const localLayerRef = useRef<ELayer | null>(null);
   const setLayerRef = (ref: ELayer) => {
@@ -29,6 +31,7 @@ const ImageLayer: FC<Props> = ({ layerAtom }) => {
   };
 
   useEffect(() => {
+    console.log("ImageLayer", layerData);
     if (layerData.type === "image") {
       if (!layerData.src && layerData.filePath) {
         window.electronAPI
@@ -59,6 +62,10 @@ const ImageLayer: FC<Props> = ({ layerAtom }) => {
               width: img.naturalWidth,
               height: img.naturalHeight,
             });
+            resetAnnotation({
+              width: img.naturalWidth,
+              height: img.naturalHeight,
+            });
           }}
         />
       ) : null}
@@ -66,4 +73,4 @@ const ImageLayer: FC<Props> = ({ layerAtom }) => {
   );
 };
 
-export default ImageLayer;
+export default memo(ImageLayer);

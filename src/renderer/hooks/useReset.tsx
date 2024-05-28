@@ -5,6 +5,7 @@ import {
   historyAtom,
   layerListAtom,
   layerListAtomsAtom,
+  updateLayerListAtom,
 } from "@/shared/stores/atom";
 import { defaultLayers, humanNodes } from "@/shared/stores/define";
 import { Layer } from "@/shared/types";
@@ -34,25 +35,43 @@ export const useResetCampus = () => {
 };
 export const useResetAnnotation = () => {
   const [layerList, setLayerList] = useAtom(layerListAtom);
+  const [layerListAtoms, dispatchListAtoms] = useAtom(layerListAtomsAtom);
+  const [updateEnabled, updateLayerList] = useAtom(updateLayerListAtom);
   const canvasSize = useAtomValue(canvasSizeAtom);
+  const resetAnnotation = ({
+    width,
+    height,
+  }: {
+    width?: number;
+    height?: number;
+  } = {}) => {
+    const canvasWidth = width || canvasSize.width;
+    const canvasHeight = height || canvasSize.height;
 
-  const resetLayer: Layer[] = defaultLayers.map((layer) => {
-    return {
-      ...layer,
-      defaultTargetStyle: {
-        radius:
-          canvasSize.width > canvasSize.height
-            ? (20 / 1024) * canvasSize.height
-            : (20 / 1024) * canvasSize.width,
-      },
-    };
-  });
-
-  const resetAnnotation = () => {
-    setLayerList([
-      ...layerList.filter((layer) => layer.type === "image"),
-      ...resetLayer,
-    ]);
+    const resetLayer: Layer[] = defaultLayers
+      .filter((layer) => layer.type === "annotation")
+      .map((layer) => {
+        return {
+          ...layer,
+          nodes: {
+            ...layer.nodes,
+            defaultTargetStyle: {
+              radius:
+                canvasWidth > canvasHeight
+                  ? (20 / 1024) * canvasHeight
+                  : (20 / 1024) * canvasWidth,
+            },
+          },
+        };
+      });
+    console.log("resetAnnotation", canvasSize);
+    layerList.map((layer, i) => {
+      if (layer.type === "annotation") {
+        const layerAtom = layerListAtoms[i];
+        const updatedLayer = resetLayer.find((l) => l.name === layer.name);
+        updatedLayer && updateLayerList(layerAtom, updatedLayer);
+      }
+    });
   };
 
   return { resetAnnotation };

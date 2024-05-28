@@ -24,6 +24,13 @@ export const layerListAtom = atomWithReset<Layer[]>(defaultLayers);
 
 export const layerListAtomsAtom = splitAtom(layerListAtom);
 
+export const updateLayerListAtom = atom(
+  (get) => !!get(layerListAtom),
+  (get, set, targetAtom: PrimitiveAtom<Layer>, value: Layer) => {
+    set(targetAtom, value);
+  }
+);
+
 export const appModeAtom = atom<AppMode>("Single");
 
 export const currentImgSrcFilepathAtom =
