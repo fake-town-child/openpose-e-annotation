@@ -4,6 +4,7 @@ import {
   canvasSizeAtom,
   currentImgSrcFilepathAtom,
   currentSaveFilepathAtom,
+  isSaveImageModeAtom,
   layerListAtom,
   layerListAtomsAtom,
 } from "@/shared/stores/atom";
@@ -139,6 +140,7 @@ export const useLoadSaveFile = () => {
 };
 export const useSaveImage = () => {
   const [layerList, setLayerList] = useAtom(layerListAtom);
+  const [isSaveImageMode, setIsSaveImageMode] = useAtom(isSaveImageModeAtom);
   const toast = useToast();
 
   const saveImage = (filePath: string, activeLayer: string[]) => {
@@ -148,6 +150,7 @@ export const useSaveImage = () => {
         layer.ref.visible(activeLayer.includes(layer.name));
       }
     });
+    setIsSaveImageMode(true);
 
     if (layerList[0].ref?.parent) {
       const dataURL = layerList[0].ref?.parent.toDataURL({
@@ -181,6 +184,7 @@ export const useSaveImage = () => {
       }
     }
 
+    setIsSaveImageMode(false);
     //全レイヤーを表示に戻す
     layerList.map((layer) => {
       if (layer.ref) {

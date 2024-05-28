@@ -21,7 +21,7 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
 
   const canvasSize = useAtomValue(canvasSizeAtom);
 
-  const localLayerRef = useRef<ELayer | null>(null);
+  const localLayerRef = useRef<ELayer | null>(layerData.ref);
 
   const setLayerRef = (ref: ELayer) => {
     if (!localLayerRef.current) {

@@ -28,6 +28,13 @@ export const versionHistory: AppVersionHistory = [
     - fix when load savefile secondtime, the annotation layer cannot be saved.
     `.trim(),
   },
+  {
+    version: "1.0.4",
+    description: `
+    Fix bugs
+    - unvisible target is saved in annotation layer image
+    `.trim(),
+  },
 ];
 
 export const currentVersion = versionHistory[versionHistory.length - 1].version;

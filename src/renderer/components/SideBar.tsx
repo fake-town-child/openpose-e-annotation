@@ -56,7 +56,7 @@ const Sidebar: FC = () => {
 
       <CurrentStatus />
       <Divider />
-      <Debug />
+      {/* <Debug /> */}
       <Control />
       <Divider />
       {switchMenu(appMode)}
