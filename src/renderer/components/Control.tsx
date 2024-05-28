@@ -8,6 +8,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { FC } from "react";
 import { useResetAnnotation, useResetCampus } from "../hooks/useReset";
 import { useMousetrap } from "../hooks/useMousetrap";
+import { defaultLayersSmall } from "@/shared/stores/define";
 const Control: FC = () => {
   const appState = useAtomValue(appStateAtom);
   const { resetCampus } = useResetCampus();
@@ -45,7 +46,9 @@ const Control: FC = () => {
       <Button onClick={() => resetAnnotation()}>Reset Annotation</Button>
       <Button
         onClick={() => {
-          console.log("");
+          resetAnnotation({
+            referenceLayers: defaultLayersSmall,
+          });
         }}
       >
         Reset Annotation(small)

@@ -41,14 +41,17 @@ export const useResetAnnotation = () => {
   const resetAnnotation = ({
     width,
     height,
+    referenceLayers,
   }: {
     width?: number;
     height?: number;
+    referenceLayers?: Layer[];
   } = {}) => {
     const canvasWidth = width || canvasSize.width;
     const canvasHeight = height || canvasSize.height;
+    const annotationDefaultLayer = referenceLayers || defaultLayers;
 
-    const resetLayer: Layer[] = defaultLayers
+    const resetLayer: Layer[] = annotationDefaultLayer
       .filter((layer) => layer.type === "annotation")
       .map((layer) => {
         return {
@@ -70,7 +73,6 @@ export const useResetAnnotation = () => {
           },
         };
       });
-    console.log("resetAnnotation", canvasSize);
     layerList.map((layer, i) => {
       if (layer.type === "annotation") {
         const layerAtom = layerListAtoms[i];

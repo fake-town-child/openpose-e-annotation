@@ -62,10 +62,35 @@ export const humanBonePositions: TargetPosition[] = [
   { id: "foot.L", x: 336.73597329213936, y: 867.5698239622261 },
 ];
 
+export const humanBonePositionsSmall: TargetPosition[] = [
+  { id: "nose", x: 172.156799766509, y: 65.30734061360164 },
+  { id: "neck", x: 173.8900418310565, y: 111.07946544648324 },
+  { id: "eye.R", x: 135.42803307193572, y: 28.874342402296506 },
+  { id: "eye.L", x: 218.94922874098512, y: 30.252890000554334 },
+  { id: "shoulder.R", x: 223.48636080280608, y: 141.82082853050082 },
+  { id: "shoulder.L", x: 143.08091338275665, y: 148.2708813582479 },
+  { id: "lower_arm.R", x: 295.55601763351876, y: 149.4390765117087 },
+  { id: "hand.R", x: 299.6179620372598, y: 202.55085629810006 },
+  { id: "lower_arm.L", x: 108.12848849381044, y: 161.90546460780098 },
+  { id: "hand.L", x: 59.57274710843649, y: 161.63560335772956 },
+  { id: "upper_leg.R", x: 198.28063957639816, y: 158.34025636474536 },
+  { id: "lower_leg.R", x: 225.22966413508215, y: 218.99847346234822 },
+  { id: "foot.R", x: 182.21807099582765, y: 288.7553969209878 },
+  { id: "upper_leg.L", x: 139.40831837069823, y: 187.83586202945025 },
+  { id: "lower_leg.L", x: 107.43155364680034, y: 225.9612962062345 },
+  { id: "foot.L", x: 54.43577094629391, y: 270.7218405082448 },
+];
+
 export const humanNodes: Nodes = {
   nodes: humanBones,
   targetStyle: humanBoneStyles,
   targetPosition: humanBonePositions,
+};
+
+export const humanNodesSmall: Nodes = {
+  nodes: humanBones,
+  targetStyle: humanBoneStyles,
+  targetPosition: humanBonePositionsSmall,
 };
 
 export const wingBones: NodeStructure[] = [
@@ -93,10 +118,25 @@ export const wingBonePositions: TargetPosition[] = [
   { id: "wing_tip.L", x: 363.0055042936804, y: 245.10235275592606 },
 ];
 
+export const wingBonePositionsSmall: TargetPosition[] = [
+  { id: "upper_wing.R", x: 294.70887356608904, y: 95.31346738305282 },
+  { id: "lower_wing.R", x: 259.4116715574169, y: 68.56460898208512 },
+  { id: "wing_tip.R", x: 225.9100926452266, y: 104.11308340747867 },
+  { id: "upper_wing.L", x: 49.16399144370763, y: 94.1741743993892 },
+  { id: "lower_wing.L", x: 83.37611784684944, y: 74.51172543671653 },
+  { id: "wing_tip.L", x: 112.8660844935642, y: 103.93172193896639 },
+];
+
 export const wingNodes: Nodes = {
   nodes: wingBones,
   targetStyle: wingBoneStyles,
   targetPosition: wingBonePositions,
+};
+
+export const wingNodesSmall: Nodes = {
+  nodes: wingBones,
+  targetStyle: wingBoneStyles,
+  targetPosition: wingBonePositionsSmall,
 };
 
 export const defaultLayers: Layer[] = [
@@ -110,6 +150,21 @@ export const defaultLayers: Layer[] = [
     name: "wingAnnotation",
     type: "annotation",
     nodes: wingNodes,
+    ref: null,
+  },
+];
+
+export const defaultLayersSmall: Layer[] = [
+  {
+    name: "humanAnnotation",
+    type: "annotation",
+    nodes: humanNodesSmall,
+    ref: null,
+  },
+  {
+    name: "wingAnnotation",
+    type: "annotation",
+    nodes: wingNodesSmall,
     ref: null,
   },
 ];
