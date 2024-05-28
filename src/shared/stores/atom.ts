@@ -10,6 +10,7 @@ import {
   Layer,
 } from "../types";
 import { defaultLayers, humanNodes } from "./define";
+import { currentVersion } from "../version";
 
 export const appModeDef = ["Single", "Directory"] as const;
 
@@ -41,6 +42,7 @@ export const currentSaveFilepathAtom = atomWithReset<string | undefined>(
 );
 
 export const appStateAtom = atom<AppState>((get) => ({
+  appVersion: currentVersion,
   layerList: get(layerListAtom),
   size: get(canvasSizeAtom),
   state: {

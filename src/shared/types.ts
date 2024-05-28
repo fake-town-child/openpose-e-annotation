@@ -84,6 +84,7 @@ export type DirectoryModeState = {
 };
 
 export type AppState = {
+  appVersion: AppVersion;
   layerList: Layer[];
   size: {
     width: number;
@@ -115,3 +116,12 @@ export type History = {
   layerList: Layer[][];
   index: number;
 };
+
+export type AppVersion = string;
+
+export type AppVersionDescription = {
+  version: AppVersion;
+  description: string;
+};
+
+export type AppVersionHistory = AppVersionDescription[];

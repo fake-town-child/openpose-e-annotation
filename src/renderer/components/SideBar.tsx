@@ -9,6 +9,8 @@ import CurrentStatus from "./CurrentStatus";
 import DirectoryModeMenu from "./DirectoryMode/DirectoryModeMenu";
 import Control from "./Control";
 import { useResetCampus } from "../hooks/useReset";
+import { currentVersion } from "@/shared/version";
+import VersionHistory from "./VersionHistory";
 
 const Sidebar: FC = () => {
   const [appMode, setAppMode] = useAtom(appModeAtom);
@@ -58,9 +60,7 @@ const Sidebar: FC = () => {
       <Control />
       <Divider />
       {switchMenu(appMode)}
-      <Text fontSize={"x-small"} color="gray.400">
-        v1.0.1
-      </Text>
+      <VersionHistory />
     </Box>
   );
 };
