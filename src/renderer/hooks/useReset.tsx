@@ -57,6 +57,8 @@ export const useResetAnnotation = () => {
         return {
           ...layer,
           nodes: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             ...layer.nodes,
             defaultTargetStyle: {
               radius:

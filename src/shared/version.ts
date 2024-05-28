@@ -21,6 +21,6 @@ export const versionHistory: AppVersionHistory = [
     - add version history
     `.trim(),
   },
-] as const;
+];
 
 export const currentVersion = versionHistory[versionHistory.length - 1].version;
