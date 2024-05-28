@@ -21,6 +21,13 @@ export const versionHistory: AppVersionHistory = [
     - add version history
     `.trim(),
   },
+  {
+    version: "1.0.3",
+    description: `
+    Fix bugs
+    - fix when load savefile secondtime, the annotation layer cannot be saved.
+    `.trim(),
+  },
 ];
 
 export const currentVersion = versionHistory[versionHistory.length - 1].version;
