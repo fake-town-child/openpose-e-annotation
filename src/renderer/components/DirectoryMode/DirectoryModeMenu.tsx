@@ -223,7 +223,7 @@ const DirectoryModeMenu: FC = () => {
                           ],
                         })
                         .then((filePath) => {
-                          getSaveFile(filePath);
+                          getSaveFile(filePath, file.sourcePath);
                         });
                     } else {
                       resetCampus();

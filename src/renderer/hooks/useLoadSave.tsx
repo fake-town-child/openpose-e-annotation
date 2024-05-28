@@ -90,19 +90,32 @@ export const useLoadSaveFile = () => {
 
   const toast = useToast();
 
-  const getSaveFile = (filePath: string) => {
+  const getSaveFile = (filePath: string, overwriteImgSrc?: string) => {
     setState("loading");
     window.electronAPI
       .getFile({ filePath: filePath })
       .then((data) => {
         const { layerList, size, state } = LoadSaveFile(data);
         resetCampus();
-        setLayerList(layerList);
+        const newLayerList = !overwriteImgSrc
+          ? layerList
+          : layerList.map((layer) => {
+              if (layer.type === "image") {
+                return {
+                  ...layer,
+                  filePath: overwriteImgSrc,
+                };
+              }
+              return layer;
+            });
+        setLayerList(newLayerList);
         if (size) {
           setCanvasSize(size);
         }
         if (state) {
-          setCurrentImgSrcFilepath(state.currentImgSrcFilepath);
+          setCurrentImgSrcFilepath(
+            overwriteImgSrc || state.currentImgSrcFilepath
+          );
         }
         setCurrentSaveFilepath(filePath);
         setState("loaded");
