@@ -71,7 +71,11 @@ const AnnotationLayer: FC<Props> = ({ layerAtom }) => {
               points={[from.x, from.y, to.x, to.y]}
               stroke={connection.color ?? "black"}
               ref={callbackRef}
-              strokeWidth={connection.strokeWidth ?? 10}
+              strokeWidth={
+                connection.strokeWidth ??
+                layerData.nodes.defaultConnectionStyle?.strokeWidth ??
+                10
+              }
               opacity={
                 from.state === "disabled" && to.state === "disabled"
                   ? isSaveImageMode

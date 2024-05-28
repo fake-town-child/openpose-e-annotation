@@ -6,6 +6,7 @@ export type Nodes = {
   targetStyle?: TargetStyle[];
   targetPosition?: TargetPosition[];
   defaultTargetStyle?: Omit<TargetStyle, "id">;
+  defaultConnectionStyle?: Omit<ConnectionStyle, "id">;
 };
 
 export type Target = {

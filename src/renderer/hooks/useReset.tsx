@@ -61,6 +61,12 @@ export const useResetAnnotation = () => {
                   ? (20 / 1024) * canvasHeight
                   : (20 / 1024) * canvasWidth,
             },
+            defaultConnectionStyle: {
+              strokeWidth:
+                canvasWidth > canvasHeight
+                  ? (10 / 1024) * canvasHeight
+                  : (10 / 1024) * canvasWidth,
+            },
           },
         };
       });
