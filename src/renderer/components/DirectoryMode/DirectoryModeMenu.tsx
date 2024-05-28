@@ -35,8 +35,13 @@ import { FC, useState } from "react";
 import { MdArticle, MdDirectionsRun, MdFileOpen } from "react-icons/md";
 
 const DirectoryModeMenu: FC = () => {
-  const [sourceDirValue, setSourceDirValue] = useState<string>("");
-  const [outputDirValue, setOutputDirValue] = useState<string>("");
+  const appState = useAtomValue(appStateAtom);
+  const [sourceDirValue, setSourceDirValue] = useState<string>(
+    appState.runtimeState.directoryMode?.sourceDir ?? ""
+  );
+  const [outputDirValue, setOutputDirValue] = useState<string>(
+    appState.runtimeState.directoryMode?.outputDir ?? ""
+  );
   const { loadFiles, state, dirModeState } = useDirectoryMode({
     sourceDir: sourceDirValue,
     outputDir: outputDirValue,
@@ -49,8 +54,6 @@ const DirectoryModeMenu: FC = () => {
   const { getSaveFile } = useLoadSaveFile();
 
   const { resetCampus } = useResetCampus();
-
-  const appState = useAtomValue(appStateAtom);
 
   const setDirWithDialog = (callback?: (filepath: string) => void) => {
     window.electronAPI

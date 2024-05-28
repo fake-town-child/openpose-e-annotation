@@ -35,6 +35,14 @@ export const versionHistory: AppVersionHistory = [
     - unvisible target is saved in annotation layer image
     `.trim(),
   },
+  {
+    version: "1.0.5",
+    description: `
+    UI changes
+    - set canvas to center
+    - keep directory state on change mode
+    `.trim(),
+  },
 ];
 
 export const currentVersion = versionHistory[versionHistory.length - 1].version;
