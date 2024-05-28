@@ -20,18 +20,20 @@ const ImageLayer: FC<Props> = ({ layerAtom }) => {
   const [layerData, setLayerData] = useAtom(layerAtom);
   const [canvasSize, setCanvasSize] = useAtom(canvasSizeAtom);
   const appState = useAtomValue(appStateAtom);
-  const { resetAnnotation } = useResetAnnotation();
+  const { setAnnotationStyle } = useResetAnnotation();
 
-  const localLayerRef = useRef<ELayer | null>(null);
-  const setLayerRef = (ref: ELayer) => {
-    if (!localLayerRef.current) {
-      localLayerRef.current = ref;
-      setLayerData({ ...layerData, ref });
-    }
-  };
+  const localLayerRef = useRef<ELayer | null>(layerData.ref);
+  const setLayerRef = useCallback(
+    (ref: ELayer) => {
+      if (!localLayerRef.current) {
+        localLayerRef.current = ref;
+        setLayerData({ ...layerData, ref });
+      }
+    },
+    [layerData]
+  );
 
   useEffect(() => {
-    console.log("ImageLayer", layerData);
     if (layerData.type === "image") {
       if (!layerData.src && layerData.filePath) {
         window.electronAPI
@@ -62,7 +64,7 @@ const ImageLayer: FC<Props> = ({ layerAtom }) => {
               width: img.naturalWidth,
               height: img.naturalHeight,
             });
-            resetAnnotation({
+            setAnnotationStyle({
               width: img.naturalWidth,
               height: img.naturalHeight,
             });

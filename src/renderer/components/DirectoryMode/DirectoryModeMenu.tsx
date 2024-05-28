@@ -91,15 +91,13 @@ const DirectoryModeMenu: FC = () => {
           saveSaveFile(filePath);
         });
     }
-    if (appState.state.currentImgSrcFilepath) {
-      window.electronAPI
-        .joinPath({
-          paths: [outputDirValue, ChangeExtension(basename, ".png")],
-        })
-        .then((filePath) => {
-          saveImage(filePath, annotationLayerNames);
-        });
-    }
+    window.electronAPI
+      .joinPath({
+        paths: [outputDirValue, ChangeExtension(basename, ".png")],
+      })
+      .then((filePath) => {
+        saveImage(filePath, annotationLayerNames);
+      });
     loadFiles();
   };
 
@@ -109,7 +107,7 @@ const DirectoryModeMenu: FC = () => {
       saveCurrent();
     },
     undefined,
-    [appState.state.currentSaveFilepath]
+    [appState.state.currentSaveFilepath, appState.state.currentImgSrcFilepath]
   );
 
   return (

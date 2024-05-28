@@ -92,11 +92,12 @@ export const useLoadSaveFile = () => {
 
   const getSaveFile = (filePath: string, overwriteImgSrc?: string) => {
     setState("loading");
+    resetCampus();
     window.electronAPI
       .getFile({ filePath: filePath })
       .then((data) => {
         const { layerList, size, state } = LoadSaveFile(data);
-        resetCampus();
+
         const newLayerList = !overwriteImgSrc
           ? layerList
           : layerList.map((layer) => {
@@ -108,6 +109,7 @@ export const useLoadSaveFile = () => {
               }
               return layer;
             });
+        resetCampus();
         setLayerList(newLayerList);
         if (size) {
           setCanvasSize(size);
@@ -119,7 +121,6 @@ export const useLoadSaveFile = () => {
         }
         setCurrentSaveFilepath(filePath);
         setState("loaded");
-        console.log("loaded", layerList, size, state);
       })
       .catch((err) => {
         toast({
@@ -247,11 +248,9 @@ export const useDirectoryMode = ({
 
   const loadFiles = () => {
     setState("loading");
-    console.log(sourceDir, outputDir);
     window.electronAPI
       .getDirectoryFiles({ directoryPath: sourceDir })
       .then(async (files) => {
-        console.log(files);
         const dirModeFiles: DirectoryModeFile[] = await Promise.all(
           files.map(async (file) => {
             const filename = await window.electronAPI.getBaseName({

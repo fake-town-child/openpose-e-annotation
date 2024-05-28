@@ -14,7 +14,6 @@ const FileSave: FC = () => {
   useMousetrap(
     "ctrl+s",
     () => {
-      console.log(appState.state.currentSaveFilepath);
       if (appState.state.currentSaveFilepath) {
         saveSaveFile(appState.state.currentSaveFilepath);
       } else {

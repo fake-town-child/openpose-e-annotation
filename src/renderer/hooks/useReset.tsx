@@ -38,6 +38,43 @@ export const useResetAnnotation = () => {
   const [layerListAtoms, dispatchListAtoms] = useAtom(layerListAtomsAtom);
   const [updateEnabled, updateLayerList] = useAtom(updateLayerListAtom);
   const canvasSize = useAtomValue(canvasSizeAtom);
+
+  const setAnnotationStyle = ({
+    width,
+    height,
+  }: {
+    width?: number;
+    height?: number;
+  } = {}) => {
+    const canvasWidth = width || canvasSize.width;
+    const canvasHeight = height || canvasSize.height;
+    layerList.map((layer, i) => {
+      if (layer.type === "annotation") {
+        const layerAtom = layerListAtoms[i];
+        updateLayerList(layerAtom, {
+          ...layer,
+          nodes: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            ...layer.nodes,
+            defaultTargetStyle: {
+              radius:
+                canvasWidth > canvasHeight
+                  ? (20 / 1024) * canvasHeight
+                  : (20 / 1024) * canvasWidth,
+            },
+            defaultConnectionStyle: {
+              strokeWidth:
+                canvasWidth > canvasHeight
+                  ? (10 / 1024) * canvasHeight
+                  : (10 / 1024) * canvasWidth,
+            },
+          },
+        });
+      }
+    });
+  };
+
   const resetAnnotation = ({
     width,
     height,
@@ -84,5 +121,5 @@ export const useResetAnnotation = () => {
     });
   };
 
-  return { resetAnnotation };
+  return { resetAnnotation, setAnnotationStyle };
 };
