@@ -114,7 +114,7 @@ const DirectoryModeMenu: FC = () => {
   );
 
   return (
-    <VStack align="flex-start">
+    <VStack align="flex-start" overflowY={"auto"}>
       <HStack>
         <ButtonGroup>
           <Button
@@ -201,7 +201,7 @@ const DirectoryModeMenu: FC = () => {
         Load Files
       </Button>
       <Divider />
-      <TableContainer>
+      <TableContainer overflowY={"auto"}>
         <Table size="sm">
           <Tbody>
             {dirModeState.files

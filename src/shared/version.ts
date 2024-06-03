@@ -43,6 +43,14 @@ export const versionHistory: AppVersionHistory = [
     - keep directory state on change mode
     `.trim(),
   },
+  {
+    version: "1.0.6",
+    description: `
+    UI changes
+    - files table scrollable
+    - add hide button on status
+    `.trim(),
+  },
 ];
 
 export const currentVersion = versionHistory[versionHistory.length - 1].version;
