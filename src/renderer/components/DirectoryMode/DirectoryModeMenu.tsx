@@ -1,4 +1,5 @@
 import {
+  useBatchSave,
   useDirectoryMode,
   useLoadImage,
   useLoadSaveFile,
@@ -54,6 +55,8 @@ const DirectoryModeMenu: FC = () => {
   const { getSaveFile } = useLoadSaveFile();
 
   const { resetCampus } = useResetCampus();
+
+  const { saveAll } = useBatchSave();
 
   const setDirWithDialog = (callback?: (filepath: string) => void) => {
     window.electronAPI
@@ -131,6 +134,17 @@ const DirectoryModeMenu: FC = () => {
             }
           >
             One click save
+          </Button>
+          <Button
+            onClick={() => {
+              saveAll();
+            }}
+            isDisabled={
+              !(sourceDirValue !== "" && outputDirValue !== "") &&
+              state === "loaded"
+            }
+          >
+            Batch save
           </Button>
         </ButtonGroup>
       </HStack>

@@ -9,7 +9,7 @@ import {
   layerListAtomsAtom,
   stageRefAtom,
 } from "@/shared/stores/atom";
-import { DirectoryModeFile, Layer } from "@/shared/types";
+import { DirectoryModeFile, DirectoryModeState, Layer } from "@/shared/types";
 import {
   BufferToPNGDataURL,
   ChangeExtension,
@@ -22,6 +22,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { useState } from "react";
 import { useResetCampus } from "./useReset";
 import { useCanvasSize } from "./useCanvasSize";
+import { annotationLayerNames } from "@/shared/stores/define";
 
 export const useLoadImage = () => {
   const [layerListAtoms, dispatchListAtoms] = useAtom(layerListAtomsAtom);
@@ -144,11 +145,14 @@ export const useSaveImage = () => {
   const [layerList, setLayerList] = useAtom(layerListAtom);
   const [isSaveImageMode, setIsSaveImageMode] = useAtom(isSaveImageModeAtom);
   const toast = useToast();
-  const canvasSize = useAtomValue(canvasSizeAtom);
   const stageRef = useAtomValue(stageRefAtom);
   const { ResetWindow, FitToWindow } = useCanvasSize();
 
-  const saveImage = (filePath: string, activeLayer: string[]) => {
+  const saveImage = (
+    filePath: string,
+    activeLayer: string[],
+    callBack?: () => void
+  ) => {
     // activelayer以外を非表示にする
     layerList.map((layer) => {
       if (layer.ref) {
@@ -203,6 +207,8 @@ export const useSaveImage = () => {
         layer.ref.visible(true);
       }
     });
+
+    callBack && callBack();
   };
 
   return { saveImage };
@@ -313,4 +319,67 @@ export const useDirectoryMode = ({
   };
 
   return { loadFiles, state, dirModeState };
+};
+
+export const useBatchSave = () => {
+  const directoryModeState = useAtomValue(DirectoryModeStateAtom);
+
+  const appState = useAtomValue(appStateAtom);
+
+  const { saveSaveFile } = useSaveSavefile();
+  const { saveImage } = useSaveImage();
+  const { getImageFile } = useLoadImage();
+  const { getSaveFile } = useLoadSaveFile();
+
+  const saveCurrent = async () => {
+    if (!(directoryModeState.sourceDir && directoryModeState.outputDir)) return;
+    const basename = await window.electronAPI.getBaseName({
+      filePath: appState.state.currentImgSrcFilepath ?? "",
+    });
+    if (directoryModeState.sourceDir) {
+      window.electronAPI
+        .joinPath({
+          paths: [
+            directoryModeState.outputDir,
+            ChangeExtension(basename, ".json"),
+          ],
+        })
+        .then((filePath) => {
+          saveSaveFile(filePath);
+        });
+    }
+    window.electronAPI
+      .joinPath({
+        paths: [
+          directoryModeState.outputDir,
+          ChangeExtension(basename, ".png"),
+        ],
+      })
+      .then((filePath) => {
+        saveImage(filePath, annotationLayerNames);
+      });
+  };
+
+  //directoryModeState.filesのうち、isSavefileExistsがtrueのものを順次読み込んで、saveCurrent()する
+  const saveAll = async () => {
+    if (!(directoryModeState.sourceDir && directoryModeState.outputDir)) return;
+    const files = directoryModeState.files.filter(
+      (file) => file.isSavefileExists
+    );
+    for (const file of files) {
+      await getImageFile(file.sourcePath);
+      await getSaveFile(
+        await window.electronAPI.joinPath({
+          paths: [
+            directoryModeState.outputDir,
+            ChangeExtension(file.sourceFileName, ".json"),
+          ],
+        }),
+        file.sourcePath
+      );
+      await saveCurrent();
+    }
+  };
+
+  return { saveAll };
 };
