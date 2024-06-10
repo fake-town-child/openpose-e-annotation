@@ -1,5 +1,5 @@
 import { Stage, Layer, Circle } from "react-konva";
-import { FC, useEffect, useRef } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import { useWindowEvent } from "../hooks/windowEvent";
 import { Stage as EStage } from "konva/lib/Stage";
 import { useAtom, useAtomValue } from "jotai";
@@ -7,52 +7,46 @@ import {
   canvasSizeAtom,
   layerListAtom,
   layerListAtomsAtom,
+  stageRefAtom,
 } from "../../shared/stores/atom";
 import AnnotationLayer from "./AnnotationLayer";
 import ImageLayer from "./ImageLayer";
+import { useCanvasSize } from "../hooks/useCanvasSize";
 
 const MainCanvas: FC = () => {
-  const stageRef = useRef<EStage>(null);
+  const localStageRef = useRef<EStage | null>(null);
 
   const layerList = useAtomValue(layerListAtom);
   const layerListAtoms = useAtomValue(layerListAtomsAtom);
   const canvasSize = useAtomValue(canvasSizeAtom);
+  const [stageRef, setStageRef] = useAtom(stageRefAtom);
 
-  const FitToWindow = () => {
-    const container = document.querySelector("#stage-parent");
-    if (container && stageRef) {
-      const containerWidth = container.getBoundingClientRect().width;
-      const containerHeight = container.getBoundingClientRect().height;
+  const { FitToWindow } = useCanvasSize();
 
-      const scaleWidth = containerWidth / canvasSize.width;
-      const scaleHeight = containerHeight / canvasSize.height;
-      const scale = Math.min(scaleWidth, scaleHeight);
-
-      if (stageRef.current) {
-        stageRef.current.width(canvasSize.width * scale);
-        stageRef.current.height(canvasSize.height * scale);
-        stageRef.current.scale({ x: scale, y: scale });
-      }
+  const setLayerRef = useCallback((ref: EStage) => {
+    if (!localStageRef.current) {
+      localStageRef.current = ref;
+      setStageRef(localStageRef);
     }
-  };
+  }, []);
 
   useWindowEvent(
     "resize",
     () => {
-      FitToWindow();
+      FitToWindow(localStageRef);
     },
     [canvasSize, layerList, layerListAtoms]
   );
 
   useEffect(() => {
-    FitToWindow();
+    FitToWindow(localStageRef);
   }, [canvasSize, layerList, layerListAtoms]);
 
   return (
     <Stage
       width={canvasSize.width}
       height={canvasSize.height}
-      ref={stageRef}
+      ref={setLayerRef}
       id="stage"
       onClick={(e) => {
         e.evt.preventDefault();

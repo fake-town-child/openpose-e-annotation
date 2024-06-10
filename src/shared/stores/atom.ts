@@ -11,6 +11,8 @@ import {
 } from "../types";
 import { defaultLayers, humanNodes } from "./define";
 import { currentVersion } from "../version";
+import { Stage } from "konva/lib/Stage";
+import { RefObject } from "react";
 
 export const appModeDef = ["Single", "Directory"] as const;
 
@@ -33,6 +35,8 @@ export const updateLayerListAtom = atom(
 );
 
 export const appModeAtom = atom<AppMode>("Single");
+
+export const stageRefAtom = atom<RefObject<Stage> | null>(null);
 
 export const currentImgSrcFilepathAtom =
   atomWithReset<CurrentImgSrcFilepath>(undefined);

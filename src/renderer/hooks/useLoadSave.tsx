@@ -7,6 +7,7 @@ import {
   isSaveImageModeAtom,
   layerListAtom,
   layerListAtomsAtom,
+  stageRefAtom,
 } from "@/shared/stores/atom";
 import { DirectoryModeFile, Layer } from "@/shared/types";
 import {
@@ -20,6 +21,7 @@ import { useToast } from "@chakra-ui/react";
 import { useAtom, useAtomValue } from "jotai";
 import { useState } from "react";
 import { useResetCampus } from "./useReset";
+import { useCanvasSize } from "./useCanvasSize";
 
 export const useLoadImage = () => {
   const [layerListAtoms, dispatchListAtoms] = useAtom(layerListAtomsAtom);
@@ -142,6 +144,9 @@ export const useSaveImage = () => {
   const [layerList, setLayerList] = useAtom(layerListAtom);
   const [isSaveImageMode, setIsSaveImageMode] = useAtom(isSaveImageModeAtom);
   const toast = useToast();
+  const canvasSize = useAtomValue(canvasSizeAtom);
+  const stageRef = useAtomValue(stageRefAtom);
+  const { ResetWindow, FitToWindow } = useCanvasSize();
 
   const saveImage = (filePath: string, activeLayer: string[]) => {
     // activelayer以外を非表示にする
@@ -151,10 +156,13 @@ export const useSaveImage = () => {
       }
     });
     setIsSaveImageMode(true);
+    if (stageRef) {
+      ResetWindow(stageRef);
+    }
 
     if (layerList[0].ref?.parent) {
       const dataURL = layerList[0].ref?.parent.toDataURL({
-        pixelRatio: 1 / layerList[0].ref.parent?.scaleX(),
+        // pixelRatio: 1 / layerList[0].ref.parent?.scaleX(),
       });
       if (dataURL) {
         window.electronAPI
@@ -181,6 +189,10 @@ export const useSaveImage = () => {
               position: "top-right",
             });
           });
+      }
+
+      if (stageRef) {
+        FitToWindow(stageRef);
       }
     }
 
