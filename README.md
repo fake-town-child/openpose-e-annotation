@@ -2,7 +2,8 @@
 
 ![Screenshot](./docs/figs/screenshot.png)
 
-Annotation application for [Wing-openpose](https://huggingface.co/claraDolls/Wing_Openpose)
+Annotation application for [Wing-openpose](https://huggingface.co/claraDolls/Wing_Openpose)  
+日本語版 README は[こちら](./docs/README_JP.md)
 
 ## Download
 
